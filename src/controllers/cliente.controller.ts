@@ -18,5 +18,15 @@ const clienteController = {
         } catch (error) {
             res.status(500).json({ error: "Erro ao criar cliente" });
         }
-    }
+    },
+    async listar(req: Request, res: Response) {
+        try {
+            const clientes = await prisma.cliente.findMany();
+            res.status(200).json(clientes);
+        } catch (error) {
+            res.status(500).json({ error: "Erro ao listar clientes" });
+        }
+    },
 };      
+
+export default clienteController;
