@@ -51,4 +51,4 @@ const UsuarioController = {
     },
 };
 
-export default  UsuarioController ;
+export default  UsuarioController;
