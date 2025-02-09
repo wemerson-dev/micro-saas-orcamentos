@@ -13,7 +13,7 @@ const OrcamentoController = {
                     valor,
                     clienteId,
                 },
-            });
+            }); 
             res.status(201).json(newOrcamento);
         } catch (error) {
             res.status(500).json({ error: "Erro ao criar orçamento" });

@@ -16,6 +16,7 @@ const clienteController = {
             });
             res.status(201).json(cliente);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: "Erro ao criar cliente" });
         }
     },
