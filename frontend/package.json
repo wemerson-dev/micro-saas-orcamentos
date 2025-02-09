@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:css": "tailwindcss build frontend/src/app/globals.css -o frontend/src/app/tailwind.css"
   },
   "dependencies": {
     "next": "15.1.6",
