@@ -5,13 +5,18 @@ const clienteController = {
     async criar(req: Request, res: Response) {
         try {
             const { nome, email, telefone, usuarioId } = req.body;
+
+            if(!usuarioId) {
+                res.status(400).json({ error: "Usuário não informado" });
+                return;
+            }
             
             const cliente = await prisma.cliente.create({
                 data: {
                     nome,
                     email,
                     telefone,
-                    usuarioId,
+                    usuario: {connect:{id:usuarioId} },
                 },
             });
             res.status(201).json(cliente);

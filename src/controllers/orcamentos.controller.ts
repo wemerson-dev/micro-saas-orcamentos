@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import e, { Request, Response, Router } from "express";
 import prisma from "../prisma";
 //import router from "./usuario.routes";
 
@@ -16,6 +16,7 @@ const OrcamentoController = {
             }); 
             res.status(201).json(newOrcamento);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: "Erro ao criar orçamento" });
         }
     },
