@@ -10,7 +10,14 @@ const clienteController = {
                 res.status(400).json({ error: "Usuário não informado" });
                 return;
             }
-            
+
+            const valCli = await prisma.cliente.findUnique({ where: { email } });
+            if (valCli) {
+                res.status(400).json({ error: "Cliente já cadastrado" });
+                return;
+            }
+
+    
             const cliente = await prisma.cliente.create({
                 data: {
                     nome,
@@ -19,6 +26,8 @@ const clienteController = {
                     usuario: {connect:{id:usuarioId} },
                 },
             });
+
+
             res.status(201).json(cliente);
         } catch (error) {
             console.error(error);

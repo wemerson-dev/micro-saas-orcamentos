@@ -24,18 +24,33 @@ model Usuario {
 model Cliente {
   id          String      @id @default(uuid())
   nome        String
+  endereco    String
+  bairro      String
+  numero      Int
+  cidade      String
   email       String?
   telefone    String?
+  cgc         Int
   orcamentos  Orcamento[]
   usuarioId   String
   usuario     Usuario @relation(fields: [usuarioId], references: [id])
 }
 
 model Orcamento {
-  id        String  @id @default(uuid())
-  descricao String
-  valor     Float
-  status    String @default("pendente")
-  clienteId String
-  cliente   Cliente @relation(fields: [clienteId], references: [id])
+  id          String  @id @default(uuid())
+  numOrc      Int @unique
+  status      String @default("pendente")
+  dataEmissao DateTime @default(now())
+  clienteId   String
+  cliente     Cliente @relation(fields: [clienteId], references: [id])
+  itens       ItemOrcamento[]
+}
+
+model ItemOrcamento {
+  id           String   @id @default(uuid())
+  quantidade   Int
+  descricao    String
+  precoUnitario Float
+  orcamentoId  String
+  orcamento    Orcamento @relation(fields: [orcamentoId], references: [id])
 }
