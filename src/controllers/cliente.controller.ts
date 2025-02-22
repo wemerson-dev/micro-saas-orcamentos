@@ -4,14 +4,14 @@ import prisma from "../prisma";
 const clienteController = {
     async criar(req: Request, res: Response) {
         try {
-            const { nome, email, telefone, usuarioId } = req.body;
+            const { nome, email, telefone, usuarioId, endereco, bairro, numero, cidade, cgc } = req.body;
 
             if(!usuarioId) {
                 res.status(400).json({ error: "Usuário não informado" });
                 return;
             }
 
-            const valCli = await prisma.cliente.findUnique({ where: { email } });
+            const valCli = await prisma.cliente.findUnique({ where: { cgc } });
             if (valCli) {
                 res.status(400).json({ error: "Cliente já cadastrado" });
                 return;
@@ -24,6 +24,11 @@ const clienteController = {
                     email,
                     telefone,
                     usuario: {connect:{id:usuarioId} },
+                    endereco,
+                    bairro,
+                    numero: parseInt(numero),
+                    cidade,
+                    cgc,
                 },
             });
 

@@ -2,16 +2,32 @@ import e, { Request, Response, Router } from "express";
 import prisma from "../prisma";
 //import router from "./usuario.routes";
 
+
+
 const OrcamentoController = {
     async criar(req: Request, res: Response) {
         try {
-            const { descricao, valor, clienteId } = req.body;
+            const { numOrc, dataEmissao, itens,clienteId } = req.body;
+
+            const itensOrc = itens.map(((item: { quantidade: string; precoUnitario: string; descricao: any; }) => {
+                const quantidade = parseInt(item.quantidade);
+                const precoUnitario = parseFloat(item.precoUnitario);
+                const descricao = item.descricao;
+
+                return { quantidade, precoUnitario, descricao };
+            }));
             
             const newOrcamento = await prisma.orcamento.create({
                 data: {
-                    descricao,
-                    valor,
+                    numOrc,
+                    dataEmissao,
+                    itens: {
+                        create: itensOrc,
+                    },
                     clienteId,
+                },
+                include: {
+                    itens: true,
                 },
             }); 
             res.status(201).json(newOrcamento);
@@ -20,6 +36,16 @@ const OrcamentoController = {
             res.status(500).json({ error: "Erro ao criar orçamento" });
         }
     },
+
+    async listItens(req: Request, res: Response) {
+        try {
+            const itens = await prisma.itemOrcamento.findMany();
+            res.status(200).json(itens);
+        } catch (error) {
+            res.status(500).json({ error: "Erro ao listar itens" });
+        }
+    },
+
     async listar(req: Request, res: Response) {
         try {
             const orcamentos = await prisma.orcamento.findMany();

@@ -28,9 +28,9 @@ model Cliente {
   bairro      String
   numero      Int
   cidade      String
-  email       String?
+  email       String      @unique
   telefone    String?
-  cgc         Int
+  cgc         String      @unique
   orcamentos  Orcamento[]
   usuarioId   String
   usuario     Usuario @relation(fields: [usuarioId], references: [id])
