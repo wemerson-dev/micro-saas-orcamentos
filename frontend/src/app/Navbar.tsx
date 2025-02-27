@@ -12,14 +12,14 @@ export default function Navbar() {
                         </Link>
                     </li>
                     <li>
-                        <link href="/clientes" className="hover:underline">
+                        <Link href="/clientes" className="hover:underline">
                         Clientes
-                        </link>
+                        </Link>
                     </li>
                     <li>
-                        <link href="/orcamentos" className="hover:underline">
+                        <Link href="/orcamentos" className="hover:underline">
                         Orçamentos
-                        </link> 
+                        </Link> 
                     </li>
                 </ul>
             </div>

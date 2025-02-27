@@ -1,10 +1,10 @@
-import Layout from "../components/Layout";
+import layout from "./layout";
 
-export default function Home() {
+export default function page() {
     return (
-        <Layout>
+        <layout>
             <h1 className="text-2xl font-bold">Bem vindo a Micro SaaS</h1>
             <p className="mt-2">Conteúdo da home</p>
-        </Layout>
+        </layout>
     );
 }
