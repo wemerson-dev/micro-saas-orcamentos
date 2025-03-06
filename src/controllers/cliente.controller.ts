@@ -28,7 +28,7 @@ const clienteController = {
                     bairro,
                     numero: parseInt(numero),
                     cidade,
-                    cgc,
+                    cgc: BigInt(cgc),
                 },
             });
 
@@ -42,8 +42,16 @@ const clienteController = {
     async listar(req: Request, res: Response) {
         try {
             const clientes = await prisma.cliente.findMany();
-            res.status(200).json(clientes);
+            //Tratamento para formatar o CGC    
+            const formatCgc = clientes.map(cliente => (
+                {
+                    ...cliente,
+                    cgc: cliente.cgc.toString(),
+                }
+            ));
+            res.status(200).json(formatCgc);
         } catch (error) {
+            console.error("Erro ao listar clientes",error);
             res.status(500).json({ error: "Erro ao listar clientes" });
         }
     },
