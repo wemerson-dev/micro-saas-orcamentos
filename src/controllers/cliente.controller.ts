@@ -32,8 +32,11 @@ const clienteController = {
                 },
             });
 
-
-            res.status(201).json(cliente);
+            const formatCgc = {
+                ...cliente,
+                cgc: cliente.cgc.toString(),
+            };
+            res.status(201).json(formatCgc);
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Erro ao criar cliente" });
@@ -49,7 +52,7 @@ const clienteController = {
                     cgc: cliente.cgc.toString(),
                 }
             ));
-            res.status(200).json(formatCgc);
+            res.status(201).json(formatCgc);
         } catch (error) {
             console.error("Erro ao listar clientes",error);
             res.status(500).json({ error: "Erro ao listar clientes" });
