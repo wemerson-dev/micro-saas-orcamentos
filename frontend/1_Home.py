@@ -27,8 +27,27 @@ listCli = []
 for cli in clients:
     listCli.append(cli['nome'])
     
+# Seleção do cliente   
 slcClient = st.sidebar.selectbox('Selecione o Cliente', listCli)
 filtredClient = [cli for cli in clients if cli['nome'] == slcClient]
 
+# Exibição dos dados do cliente
+if len(filtredClient) > 0:
+    for slcCli in filtredClient:
+        with st.form(key=f'form_{slcCli["id"]}'):
+            st.text_input("Nome", value=slcCli['nome'], disabled=True)
+            st.text_input("CNPJ/CPF", value=slcCli['cgc'], disabled=True)
+            st.text_input("Telefone", value=slcCli['telefone'], disabled=True)
+            st.text_input("Email", value=slcCli['email'], disabled=True)
+            st.text_input("Endereço", value=slcCli['endereco'], disabled=True)
+            col1, col2, col3= st.columns(3)
+            with col1:
+                st.form_submit_button('Criar Orçamento')
+            with col2:
+                st.form_submit_button('Adicionar Novo Cliente')
+            with col3:
+                st.form_submit_button('Excluir Cliente')
+else:
+    st.error('Cliente não encontrado')
 
     
