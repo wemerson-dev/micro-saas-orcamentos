@@ -58,6 +58,42 @@ const clienteController = {
             res.status(500).json({ error: "Erro ao listar clientes" });
         }
     },
+    async cUpdate(req: Request, res: Response) {
+        try {
+            const {id} = req.params;
+            const { nome, email, telefone, endereco, bairro, numero, cidade, cgc } = req.body;
+
+            const updateClient = await prisma.cliente.update({
+                where: { id },
+                data: {
+                    nome,
+                    email,
+                    telefone,
+                    endereco,
+                    bairro,
+                    numero: parseInt(numero),
+                    cidade,
+                    cgc: BigInt(cgc),
+                },});
+                const formatCgc = {
+                    ...updateClient,
+                    cgc: updateClient.cgc.toString(),
+                };
+            res.json(formatCgc)
+        }
+            catch (error) {
+                console.error("Erro ao atualizar cliente",error);
+        }
+    },
+    async cDelete(req: Request, res: Response) {
+        const { id } = req.params;
+        try {
+            await prisma.cliente.delete({where: { id },});
+            res.json({ message: "Cliente deletado com sucesso" });
+        } catch (error) {
+            res.status(500).json({ error: "Erro ao deletar cliente" });
+        }
+    },
 };      
 
 export default clienteController;
