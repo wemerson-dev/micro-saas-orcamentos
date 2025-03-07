@@ -31,6 +31,7 @@ for cli in clients:
 slcClient = st.sidebar.selectbox('Selecione o Cliente', listCli)
 filtredClient = [cli for cli in clients if cli['nome'] == slcClient]
 
+# função para criar novo cliente
 @st.dialog('Cadastro de Clientes')
 def formNewClient():
     st.subheader('Preencha os campos abaixo ')
@@ -61,9 +62,6 @@ def formNewClient():
                 st.success('Cliente cadastrado com sucesso')
             else:
                 st.error('Erro ao cadastrar cliente')
-
-
-
 
 # Função para excluir Cliente
 def deleteClient(id):
