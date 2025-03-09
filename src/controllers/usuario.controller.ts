@@ -57,5 +57,14 @@ class UsuarioController  {
             return 
         }
     }
+    static async uListar(req: Request, res: Response): Promise<void> {
+        try {
+            const usuarios = await prisma.usuario.findMany();
+            res.status(201).json(usuarios);
+        } catch (error) {
+            console.error("Erro ao listar usuários",error);
+            res.status(500).json({ erro: "Erro ao listar usuários" });
+        }
+    }
 };
 export default UsuarioController;

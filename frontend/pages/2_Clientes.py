@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import time
 
 API_URL = 'http://localhost:5000/Cliente/listar'
 responseGet = requests.get(API_URL)
@@ -60,18 +61,31 @@ def formNewClient():
             response = requests.post('http://localhost:5000/cliente/criar', json=newClient)
             if response.status_code == 201:
                 st.success('Cliente cadastrado com sucesso')
+                time.sleep(2)
+                st.rerun()
             else:
                 st.error('Erro ao cadastrar cliente')
+                time.sleep(2)   
+                st.rerun()
 
 # Função para excluir Cliente
+@st.dialog('Confirma a exclusão do cliente?')
 def deleteClient(id):
-    API_URL = 'http://localhost:5000/cliente/deletar/' + str(id)
-    response = requests.delete(API_URL)
-    if response.status_code == 200:
-        st.success('Cliente excluído com sucesso')
-    else:
-        st.error('Ação não permitida para este cliente')
-    
+    butonS = st.button('Sim')
+    butonN = st.button('Não')
+    if butonS:
+        API_URL = 'http://localhost:5000/cliente/deletar/' + str(id)
+        response = requests.delete(API_URL)
+        if response.status_code == 200:
+            st.success('Cliente excluído com sucesso')
+            time.sleep(2)
+            st.rerun()
+        else:
+            st.error('Ação não permitida para este cliente')
+            time.sleep(2)
+            st.rerun()
+    if butonN:
+        st.rerun()
 
 
 # Exibição dos dados do cliente
