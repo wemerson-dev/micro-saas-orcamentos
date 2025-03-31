@@ -19,7 +19,7 @@ def login():
                     st.session_state['user'] = userMail
                     st.session_state['logado'] = True
                     sleep(1)
-                    st.experimental_user()
+                    st.rerun()
                 else:
                     st.error('Login ou senha incorretos')
 
@@ -33,6 +33,7 @@ def main():
         login()
     else:
         telaCli()
+    
 
 if __name__ == '__main__':
     main()

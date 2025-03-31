@@ -105,3 +105,4 @@ def telaCli():
                             deleteClient(cIdCli)
         else:
             st.error('Cliente não encontrado')  
+
