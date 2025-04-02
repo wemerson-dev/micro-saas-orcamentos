@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import requests
 from time import sleep
-from Clientes import formNewClient, deleteClient, telaCli
+#from Clientes import formNewClient, deleteClient, telaCli
 
 def login():
     with st.container(border=True):
@@ -23,6 +23,11 @@ def login():
                 else:
                     st.error('Login ou senha incorretos')
 
+def logout():
+    if st.button('Logout'):
+        st.session_state['logado'] = False
+        st.rerun()
+
 
 
 def main():
@@ -32,8 +37,24 @@ def main():
     if not st.session_state['logado']:
         login()
     else:
-        telaCli()
-    
+        page_login = st.Page(login, title='Login', icon=':material/login:')
+        page_logout = st.Page(logout, title='Logout', icon=':material/logout:')
+
+        pageUser = st.Page("home/Cadastro usuário.py", title="Cadastro de usuário" )
+        pageClient = st.Page("home/Clientes.py", title="Cadastro de Clientes" )
+        pageBudget = st.Page("home/Orçamentos.py", title="Cadastro de Orçamentos" )
+
+        if st.session_state['logado']:
+            pg = st.navigation(
+                {
+                    "Acount": [page_logout],
+                    "Menu": [pageUser, pageClient, pageBudget],
+                }
+            )
+        else:
+            pg = st.navigation([page_login])
+
+        pg.run()
 
 if __name__ == '__main__':
     main()

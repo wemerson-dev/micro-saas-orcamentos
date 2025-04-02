@@ -106,3 +106,6 @@ def telaCli():
         else:
             st.error('Cliente não encontrado')  
 
+if __name__ == '__main__':
+    telaCli()
+
