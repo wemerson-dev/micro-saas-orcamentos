@@ -10,7 +10,7 @@ responseGet = requests.get(API_URL)
 @st.dialog('Cadastro de Clientes')
 def formNewClient():
     st.subheader('Preencha os campos abaixo ')
-    userId = 'f88971c4-4ad1-40bf-8466-51d0785be206'     
+    userId = '1b5d76a1-1eb0-4d9d-8843-69dc276655b3'     
     with st.form(key='form_newClient'):
         nome = st.text_input("Nome")
         cgc = st.text_input("CNPJ/CPF")
@@ -104,7 +104,14 @@ def telaCli():
                         if st.form_submit_button('Excluir Cliente'):
                             deleteClient(cIdCli)
         else:
-            st.error('Cliente não encontrado')  
+            st.error('Cliente não encontrado')
+            with st.container(border=False):
+                st.subheader('Realize o cadastro de um novo cliente')
+                with st.form(key='form_newClientOne'): 
+                    if st.form_submit_button('Novo Cliente'):
+                            formNewClient()
+
+                            
 
 if __name__ == '__main__':
     telaCli()

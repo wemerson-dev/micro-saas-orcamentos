@@ -28,7 +28,7 @@ const clienteController = {
                     bairro,
                     numero: parseInt(numero),
                     cidade,
-                    cgc: BigInt(cgc),
+                    cgc: cgc.toString(),
                 },
             });
 
@@ -73,7 +73,7 @@ const clienteController = {
                     bairro,
                     numero: parseInt(numero),
                     cidade,
-                    cgc: BigInt(cgc),
+                    cgc: cgc.toString(),
                 },});
                 const formatCgc = {
                     ...updateClient,
