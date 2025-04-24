@@ -4,10 +4,13 @@ import requests
 from datetime import datetime
 import time
 
+
 st.set_page_config(
     page_title='Tela de Orçamento', 
     page_icon=':money_with_wings:', 
     layout='wide')
+
+
 
 # Endpoint Lista clientes  
 API_URL = 'http://localhost:5000/Cliente/listar'
@@ -34,7 +37,7 @@ for cli in clients:
 slcClient = st.sidebar.selectbox('Selecione o Cliente', listCli)
 filtredClient = [cli for cli in clients if cli['nome'] == slcClient]
 
-def add_item():
+"""def add_item():
     # Adiciona um novo item à lista
     st.session_state.itens.append({"quantidade": 1, "descricao": "", "precoUnitario": 0.0})
 
@@ -44,7 +47,7 @@ def rem_item():
         st.session_state.itens.pop()
     else:
         st.warning("Não há itens para remover.")
-
+"""
 # Construtor tela de Orçamentos 
 def telaOrcamento():
     st.title('Tela de Orçamento')
@@ -66,7 +69,7 @@ def telaOrcamento():
         
                 # Layout fixo para os itens
                 for i, item in enumerate(st.session_state.itens):
-                    st.markdown(f"**Item {i + 1}**")
+                #st.markdown(f"**Item {i + 1}**")
                     cols = st.columns([1,6,1])
                     with cols[0]:
                         st.session_state.itens[i]['quantidade'] = st.number_input(
@@ -78,33 +81,40 @@ def telaOrcamento():
                         st.session_state.itens[i]['precoUnitario'] = st.number_input(
                             'Preço Unitário', value=item['precoUnitario'], min_value=0.0, step=0.01, key=f'precoUnitario_{i}')
 
-                # Botões para adicionar ou remover itens
-                butItem, butRem = st.columns(2)
-                with butItem:
-                    if st.form_submit_button('Adicionar Item'):
-                        add_item()
-                with butRem:
-                    if st.form_submit_button('Remover Item'):
-                        rem_item()
+            # Botões para adicionar ou remover itens
+            butItem, butRem = st.columns(2)
+            with butItem:
+                add_click = st.form_submit_button('Adicionar Item')
+            with butRem:
+                rem_click = st.form_submit_button('Remover Item')
 
-                # Botão para criar o orçamento
-                if st.form_submit_button('Criar Orçamento'):
-                    dateNow = datetime.now().isoformat() + "Z"
-                    apiUrl = "http://localhost:5000/orcamento/criar"
-                    response = requests.post(apiUrl, json={
-                        'clienteId': cIdCli,
-                        'numOrc': 6,
-                        'dataEmissao': dateNow,
-                        'itens': st.session_state.itens,
-                    })
+            if add_click == True:
+                st.session_state.itens.append({"quantidade": 1, "descricao": "", "precoUnitario": 0.0})
+            if rem_click == True:
+                if st.session_state.itens:
+                    st.session_state.itens.pop()
+                else:
+                    st.warning("Não há itens para remover.")
 
-                    if response.status_code == 201:
-                        st.success('Orçamento criado com sucesso!')
-                        st.session_state.itens = []
-                        time.sleep(2)
-                        st.rerun()
-                    else:
-                        st.error('Erro ao criar o orçamento. Tente novamente.')
+            # Botão para criar o orçamento
+            submit_button = st.form_submit_button('Criar Orçamento')
+            if submit_button:
+                dateNow = datetime.now().isoformat() + "Z"
+                apiUrl = "http://localhost:5000/orcamento/criar"
+                response = requests.post(apiUrl, json={
+                    'clienteId': cIdCli,
+                    'numOrc': 7,
+                    'dataEmissao': dateNow,
+                    'itens': st.session_state.itens,
+                })
+
+                if response.status_code == 201:
+                    st.success('Orçamento criado com sucesso!')
+                    st.session_state.itens = []
+                    time.sleep(2)
+                    st.rerun()
+                else:
+                    st.error('Erro ao criar o orçamento. Tente novamente.')
 
 
 if __name__ == '__main__':
