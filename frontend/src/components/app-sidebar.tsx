@@ -3,15 +3,16 @@
 import * as React from "react"
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
+  Folders,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
+  Users,
+  FileStack,
+  ChartNoAxesCombined,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -52,63 +53,47 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Usuários",
       url: "#",
-      icon: SquareTerminal,
+      icon: Users,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "Cadastro de Usuários",
+          url: "http://localhost:3000/usuarios",
+        },
+        {
+          title: "Perfil do Usuário",
+          url: "#",
+        },  
+      ],
+    },
+    {
+      title: "Clientes",
+      url: "#",
+      icon: FileStack,
+      items: [
+        {
+          title: "Novo Cliente",
           url: "#",
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
+          title: "Dashboard Clientes",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Orçamentos",
       url: "#",
-      icon: Bot,
+      icon: Folders,
       items: [
         {
-          title: "Genesis",
+          title: "Novo Orçamento",
           url: "#",
         },
         {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
+          title: "Hirtórico",
           url: "#",
         },
       ],
@@ -139,9 +124,9 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: "Dashboard",
+      url: "http://localhost:3000/dashboard",
+      icon: ChartNoAxesCombined,
     },
     {
       name: "Sales & Marketing",
