@@ -53,18 +53,14 @@ const data = {
   ],
   navMain: [
     {
-      title: "Usuários",
+      title: "Usuário",
       url: "#",
       icon: Users,
       isActive: true,
       items: [
         {
-          title: "Cadastro de Usuários",
-          url: "http://localhost:3000/usuarios",
-        },
-        {
           title: "Perfil do Usuário",
-          url: "#",
+          url: "http://localhost:3000/usuarios",
         },  
       ],
     },
