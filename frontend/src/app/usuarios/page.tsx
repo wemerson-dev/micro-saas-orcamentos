@@ -19,7 +19,7 @@ import { AvatarFallback } from "@/components/ui/avatar"
 
 export default function pagUser () {
     return(
-        <SidebarInset>
+        <SidebarInset >
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <Separator
               orientation="vertical"
@@ -41,14 +41,14 @@ export default function pagUser () {
                     </Breadcrumb>
                 </div>
             </header>
-            <div className="max-w-5xl mx-auto p-6">
-                <Card className="w-150">
+            <div className="max-w-4x1 mx-auto p-6 md:p-6">
+                <Card className="p-13" >
                     <CardHeader>
                         <CardTitle>Perfil do Usuário</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-col md:flex-row md:items-start gap-8">
-                            <div className="flex flex-col items-center gap-4">
+                            <div className="flex flex-col items-center gap-4 md:w-1/3">
                                 <Avatar className="h-24 w-24">
                                     <AvatarImage src="https://github.com/shadcn.png" alt="Usuário" />
                                     <AvatarFallback>US</AvatarFallback>
@@ -56,21 +56,25 @@ export default function pagUser () {
                                 <Button variant="outline">Alterar foto</Button>
                             </div>
 
-                            <div>
+                            <div className="flex-1 space-y-4">
                                 <div>
                                     <Label htmlFor="name">Nome</Label>
-                                    <Input id="name" placeholder="Nome completo"></Input>
+                                    <Input className="flex flex-col w-70 mt-1" id="name" placeholder="Nome completo"></Input>
                                 </div>
                                 <div>
-                                    <Label htmlFor="email">E-Mail</Label>
-                                    <Input id="email" placeholder="insira se Email" ></Input>
+                                    <Label className="mt-1.5" htmlFor="email">E-Mail</Label>
+                                    <Input className="mt-1" id="email" placeholder="insira se Email" ></Input>
                                 </div>
                                 <div>
-                                    <Label htmlFor="empresa">Empresa</Label>
-                                    <Input id="empresa" placeholder="Nome da empresa"></Input>
+                                    <Label className="mt-1.5" htmlFor="empresa">Empresa</Label>
+                                    <Input className="mt-1" id="empresa" placeholder="Nome da empresa"></Input>
+                                </div>
+                                <div>
+                                    <Label className="mt-1.5" htmlFor="wordpass">Senha</Label>
+                                    <Input className="mt-1" id="wordpass" placeholder="Sua Senha"></Input>
                                 </div>
                                 <Separator/>
-                                <div className="flex justify-end">
+                                <div className="flex justify-end mt-2">
                                     <Button>Salvar Alterações</Button>
                                 </div>
                             </div>
