@@ -86,7 +86,7 @@ const data = {
       items: [
         {
           title: "Novo Orçamento",
-          url: "#",
+          url: "http://localhost:3000/orcamentos",
         },
         {
           title: "Hirtórico",
