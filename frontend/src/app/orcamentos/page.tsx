@@ -18,7 +18,8 @@ import {
     BreadcrumbSeparator,
   } from "@/components/ui/breadcrumb"
 
-interface Cliente {
+  //interface Dafine o modelo de dados para consumir da API - DADOS DO CLIENTE
+  interface Cliente {
   id: string
   nome: string
   empresa: string
@@ -33,16 +34,17 @@ interface Item {
   precoUnitario: number
 }
 
+// "export default function" - Função principal do Componente
 export default function NovoOrcamento() {
-  const [clientes, setClientes] = useState<Cliente[]>([])
-  const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null)
-  const [itens, setItens] = useState<Item[]>([{ quantidade: 1, descricao: "", precoUnitario: 0 }])
+  const [clientes, setClientes] = useState<Cliente[]>([])  //Cria uma lista para os clientes "useState" é usado para atualizar a tela quando houver mudança
+  const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null) //Guarda o cliente escolhido
+  const [itens, setItens] = useState<Item[]>([{ quantidade: 1, descricao: "", precoUnitario: 0 }]) // Cria uma lista vazia com os campos pre estabelecidos
 
   useEffect(() => {
     // Chamar sua API real aqui
-    fetch("http://localhost:5000/Cliente/listar")
-      .then(res => res.json())
-      .then(data => setClientes(data))
+    fetch("http://localhost:5000/Cliente/listar") //EndPoint da minha API - GET para listar clientes
+      .then(res => res.json()) // Converte os Dados capturados para JSON 
+      .then(data => setClientes(data)) // Salva os Dados 
   }, [])
 
   const handleItemChange = (index: number, campo: keyof Item, valor: string) => {
@@ -83,12 +85,12 @@ export default function NovoOrcamento() {
                 </Breadcrumb>                
             </div>
         </header>
-        <div className="max-w-5xl mx-auto p-6">
+        <div className="max-w-5xl mx-auto p-0">
         <Card>
             <CardHeader>
             <CardTitle>Novo Orçamento</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
                 <div className="flex-1">
                 <Label>Selecione o cliente</Label>
