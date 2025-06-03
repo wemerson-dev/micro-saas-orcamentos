@@ -22,7 +22,7 @@ import {
   interface Cliente {
   id: string
   nome: string
-  empresa: string
+  cidade: string
   endereco: string
   telefone: string
   email: string
@@ -85,26 +85,29 @@ export default function NovoOrcamento() {
                 </Breadcrumb>                
             </div>
         </header>
-        <div className="max-w-5xl mx-auto p-0">
-        <Card>
-            <CardHeader>
-            <CardTitle>Novo Orçamento</CardTitle>
+        <div className="w-full p-6 transition-all duration-300">
+        <Card className="w-full"> 
+            {/*Cabeçalho do Card*/}
+            <CardHeader> 
+                <CardTitle>Novo Orçamento</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+
+            {/*Conteudo do Card */}
+            <CardContent className="space-y-1">
             <div className="flex items-center gap-4">
                 <div className="flex-1">
-                <Label>Selecione o cliente</Label>
+                {/*<Label>Selecione o cliente</Label>*/}
                 <Select onValueChange={(id) => {
                     const cliente = clientes.find(c => c.id === id)
                     setClienteSelecionado(cliente || null)
                 }}>
                     <SelectTrigger>
-                    <SelectValue placeholder="Selecione um cliente" />
+                    <SelectValue placeholder="Selecione o cliente" />
                     </SelectTrigger>
                     <SelectContent>
                     {clientes.map((cliente) => (
                         <SelectItem key={cliente.id} value={cliente.id}>
-                        {cliente.nome} - {cliente.empresa}
+                        {cliente.nome}
                         </SelectItem>
                     ))}
                     </SelectContent>
@@ -114,15 +117,16 @@ export default function NovoOrcamento() {
             </div>
 
             {clienteSelecionado && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><Label>Empresa</Label><Input disabled value={clienteSelecionado.empresa} /></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5">
+                <div><Label>Empresa</Label><Input disabled value={clienteSelecionado.nome} /></div>
                 <div><Label>Endereço</Label><Input disabled value={clienteSelecionado.endereco} /></div>
+                <div><Label>Cidade</Label><Input disabled value={clienteSelecionado.cidade} /></div>
                 <div><Label>Telefone</Label><Input disabled value={clienteSelecionado.telefone} /></div>
                 <div><Label>E-mail</Label><Input disabled value={clienteSelecionado.email} /></div>
                 </div>
             )}
-
-            <div className="space-y-4">
+            <Separator/>
+            <div className="space-y-4 mt-4">
                 <Label>Itens do Orçamento</Label>
                 {itens.map((item, index) => (
                 <div key={index} className="grid grid-cols-12 gap-2 items-center">
@@ -165,7 +169,6 @@ export default function NovoOrcamento() {
                 <Plus className="h-4 w-4 mr-2" /> Adicionar item
                 </Button>
             </div>
-
             <div className="text-right font-semibold text-lg">
                 Total do orçamento: R$ {totalGeral.toFixed(2)}
             </div>
