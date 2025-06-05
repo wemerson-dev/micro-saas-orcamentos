@@ -71,7 +71,7 @@ const data = {
       items: [
         {
           title: "Novo Cliente",
-          url: "#",
+          url: "http://localhost:3000/clientes",
         },
         {
           title: "Dashboard Clientes",

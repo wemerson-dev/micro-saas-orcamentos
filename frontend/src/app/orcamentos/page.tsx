@@ -131,22 +131,22 @@ export default function NovoOrcamento() {
                 {itens.map((item, index) => (
                 <div key={index} className="grid grid-cols-12 gap-2 items-center">
                     <Input
-                    className="col-span-2"
+                    className="col-span-1"
                     type="number"
                     value={item.quantidade}
                     onChange={(e) => handleItemChange(index, "quantidade", e.target.value)}
                     placeholder="Qtd."
                     />
                     <Input
-                    className="col-span-4"
+                    className="col-span-6"
                     value={item.descricao}
                     onChange={(e) => handleItemChange(index, "descricao", e.target.value)}
                     placeholder="Descrição"
                     />
                     <Input
-                    className="col-span-3"
+                    className="col-span-2"
                     type="number"
-                    value={item.precoUnitario}
+                    value={(item.precoUnitario).toFixed(2   )}
                     onChange={(e) => handleItemChange(index, "precoUnitario", e.target.value)}
                     placeholder="Valor unitário"
                     />
