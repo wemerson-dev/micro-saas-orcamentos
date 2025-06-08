@@ -1,6 +1,7 @@
 "use client"
 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
 
@@ -26,6 +27,21 @@ export default function formClient() {
                     </Breadcrumb>
                 </div>
             </header>
+            <div className="w-full p-6 transition-all duration-300">
+                <Card className="w-full">
+                    <CardHeader>
+                        <CardTitle>Cadastro de Clientes</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-1">
+                        <div className="flex items-center gap-4">
+
+                        </div>
+
+                    </CardContent>
+
+                </Card>
+
+            </div>
         </SidebarInset>
     )
 }
