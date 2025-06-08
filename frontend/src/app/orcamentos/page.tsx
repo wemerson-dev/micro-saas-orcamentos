@@ -10,16 +10,15 @@ import { Plus, Trash2 } from "lucide-react"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { Separator } from "@radix-ui/react-separator"
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-  } from "@/components/ui/breadcrumb"
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
-  //interface Dafine o modelo de dados para consumir da API - DADOS DO CLIENTE
-  interface Cliente {
+interface Cliente {
   id: string
   nome: string
   cidade: string
@@ -34,18 +33,22 @@ interface Item {
   precoUnitario: number
 }
 
-// "export default function" - Função principal do Componente
 export default function NovoOrcamento() {
-  const [clientes, setClientes] = useState<Cliente[]>([])  //Cria uma lista para os clientes "useState" é usado para atualizar a tela quando houver mudança
-  const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null) //Guarda o cliente escolhido
-  const [itens, setItens] = useState<Item[]>([{ quantidade: 1, descricao: "", precoUnitario: 0 }]) // Cria uma lista vazia com os campos pre estabelecidos
+  const [clientes, setClientes] = useState<Cliente[]>([])
+  const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null)
+  const [itens, setItens] = useState<Item[]>([{ quantidade: 1, descricao: "", precoUnitario: 0 }])
+  const [totalGeral, setTotalGeral] = useState(0)
 
   useEffect(() => {
-    // Chamar sua API real aqui
-    fetch("http://localhost:5000/Cliente/listar") //EndPoint da minha API - GET para listar clientes
-      .then(res => res.json()) // Converte os Dados capturados para JSON 
-      .then(data => setClientes(data)) // Salva os Dados 
+    fetch("http://localhost:5000/Cliente/listar")
+      .then(res => res.json())
+      .then(data => setClientes(data))
   }, [])
+
+  useEffect(() => {
+    const total = itens.reduce((acc, item) => acc + item.quantidade * item.precoUnitario, 0)
+    setTotalGeral(total)
+  }, [itens])
 
   const handleItemChange = (index: number, campo: keyof Item, valor: string) => {
     const novosItens = [...itens]
@@ -57,128 +60,150 @@ export default function NovoOrcamento() {
     setItens(novosItens)
   }
 
-  const totalLinha = (item: Item) => item.quantidade * item.precoUnitario
-  const totalGeral = itens.reduce((total, item) => total + totalLinha(item), 0)
-
   const adicionarItem = () => setItens([...itens, { quantidade: 1, descricao: "", precoUnitario: 0 }])
   const removerItem = (index: number) => setItens(itens.filter((_, i) => i !== index))
 
+  const salvarOrcamento = async () => {
+    if (!clienteSelecionado) {
+      alert("Selecione um cliente antes de salvar.")
+      return
+    }
+
+    const payload = {
+      clienteId: clienteSelecionado.id,
+      itens,
+      total: totalGeral
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/Orcamento/criar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+
+      if (res.ok) {
+        alert("Orçamento salvo com sucesso!")
+        setItens([{ quantidade: 1, descricao: "", precoUnitario: 0 }])
+        setClienteSelecionado(null)
+      } else {
+        alert("Erro ao salvar orçamento.")
+      }
+    } catch (error) {
+      alert("Erro de conexão com o servidor.")
+    }
+  }
+
   return (
     <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <Separator orientation="vertical"
-            className="mr-2 data-[orientation:vertical]:h-4"
-            />
-            <div>
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem className="hidden md:block">
-                            <BreadcrumbLink href="#">
-                                Building Your Application
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator className="hidden md:block" />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Orçamentos</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>                
-            </div>
-        </header>
-        <div className="w-full p-6 transition-all duration-300">
-        <Card className="w-full"> 
-            {/*Cabeçalho do Card*/}
-            <CardHeader> 
-                <CardTitle>Novo Orçamento</CardTitle>
-            </CardHeader>
-
-            {/*Conteudo do Card */}
-            <CardContent className="space-y-1">
+      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <Separator orientation="vertical" className="mr-2 data-[orientation:vertical]:h-4" />
+        <div>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="#">
+                  Building Your Application
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Orçamentos</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </header>
+      <div className="w-full p-6 transition-all duration-300">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Novo Orçamento</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1">
             <div className="flex items-center gap-4">
-                <div className="flex-1">
-                {/*<Label>Selecione o cliente</Label>*/}
+              <div className="flex-1">
                 <Select onValueChange={(id) => {
-                    const cliente = clientes.find(c => c.id === id)
-                    setClienteSelecionado(cliente || null)
+                  const cliente = clientes.find(c => c.id === id)
+                  setClienteSelecionado(cliente || null)
                 }}>
-                    <SelectTrigger>
+                  <SelectTrigger>
                     <SelectValue placeholder="Selecione o cliente" />
-                    </SelectTrigger>
-                    <SelectContent>
+                  </SelectTrigger>
+                  <SelectContent>
                     {clientes.map((cliente) => (
-                        <SelectItem key={cliente.id} value={cliente.id}>
+                      <SelectItem key={cliente.id} value={cliente.id}>
                         {cliente.nome}
-                        </SelectItem>
+                      </SelectItem>
                     ))}
-                    </SelectContent>
+                  </SelectContent>
                 </Select>
-                </div>
-                <Button variant="outline">Novo Cliente</Button>
+              </div>
+              <Button variant="outline">Novo Cliente</Button>
             </div>
 
             {clienteSelecionado && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5">
                 <div><Label>Empresa</Label><Input disabled value={clienteSelecionado.nome} /></div>
                 <div><Label>Endereço</Label><Input disabled value={clienteSelecionado.endereco} /></div>
                 <div><Label>Cidade</Label><Input disabled value={clienteSelecionado.cidade} /></div>
                 <div><Label>Telefone</Label><Input disabled value={clienteSelecionado.telefone} /></div>
                 <div><Label>E-mail</Label><Input disabled value={clienteSelecionado.email} /></div>
-                </div>
+              </div>
             )}
-            <Separator/>
+
+            <Separator />
             <div className="space-y-4 mt-4">
-                <Label>Itens do Orçamento</Label>
-                {itens.map((item, index) => (
+              <Label>Itens do Orçamento</Label>
+              {itens.map((item, index) => (
                 <div key={index} className="grid grid-cols-12 gap-2 items-center">
-                    <Input
+                  <Input
                     className="col-span-1"
                     type="number"
                     value={item.quantidade}
                     onChange={(e) => handleItemChange(index, "quantidade", e.target.value)}
                     placeholder="Qtd."
-                    />
-                    <Input
+                  />
+                  <Input
                     className="col-span-6"
                     value={item.descricao}
                     onChange={(e) => handleItemChange(index, "descricao", e.target.value)}
                     placeholder="Descrição"
-                    />
-                    <Input
+                  />
+                  <Input
                     className="col-span-2"
                     type="number"
-                    value={(item.precoUnitario).toFixed(2   )}
+                    value={item.precoUnitario.toFixed(2)}
                     onChange={(e) => handleItemChange(index, "precoUnitario", e.target.value)}
                     placeholder="Valor unitário"
-                    />
-                    <Input
+                  />
+                  <Input
                     className="col-span-2"
                     disabled
                     value={`R$ ${(item.quantidade * item.precoUnitario).toFixed(2)}`}
-                    />
-                    <Button
+                  />
+                  <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => removerItem(index)}
                     className="col-span-1"
-                    >
+                  >
                     <Trash2 className="h-4 w-4" />
-                    </Button>
+                  </Button>
                 </div>
-                ))}
-                <Button onClick={adicionarItem} variant="outline">
+              ))}
+              <Button onClick={adicionarItem} variant="outline">
                 <Plus className="h-4 w-4 mr-2" /> Adicionar item
-                </Button>
+              </Button>
             </div>
             <div className="text-right font-semibold text-lg">
-                Total do orçamento: R$ {totalGeral.toFixed(2)}
+              Total do orçamento: R$ {totalGeral.toFixed(2)}
             </div>
-
             <div className="flex justify-end">
-                <Button>Salvar Orçamento</Button>
+              <Button onClick={salvarOrcamento}>Salvar Orçamento</Button>
             </div>
-            </CardContent>
+          </CardContent>
         </Card>
-        </div>
+      </div>
     </SidebarInset>
   )
 }
