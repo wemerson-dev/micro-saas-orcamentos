@@ -16,10 +16,17 @@ const OrcamentoController = {
 
                 return { quantidade, precoUnitario, descricao };
             }));
+            await prisma.$transaction(async(tx) =>{
+                const lastNum = await tx.orcamento.findFirst({
+                    orderBy: {numOrc:'desc'},
+                })
+                const nextNum = (lastNum?.numOrc ?? 0) + 1
+                //await tx.orcamento.create({ data:{numOrc: nextNum, ...} })
+            
             
             const newOrcamento = await prisma.orcamento.create({
                 data: {
-                    numOrc,
+                    numOrc: nextNum,
                     dataEmissao,
                     itens: {
                         create: itensOrc,
@@ -31,6 +38,7 @@ const OrcamentoController = {
                 },
             }); 
             res.status(201).json(newOrcamento);
+        })
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Erro ao criar orçamento" });
