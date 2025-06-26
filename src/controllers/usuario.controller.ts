@@ -45,6 +45,10 @@ class UsuarioController  {
                 res.status(400).json({ erro: "Senha incorreta!" });
                 return;
             } else{
+                if (!process.env.JWT_SECRET) {
+                    res.status(500).json({ erro: "JWT_SECRET não definida no ambiente do servidor." });
+                    return;
+                }
                 // Gera o token JWT
                 const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET as string, { expiresIn: "8h" });
                 console.log("Token gerado" , token);

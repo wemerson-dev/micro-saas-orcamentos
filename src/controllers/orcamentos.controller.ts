@@ -1,4 +1,4 @@
-import e, { Request, Response, Router } from "express";
+import { Request, Response, RequestHandler } from "express";
 import prisma from "../prisma";
 //import router from "./usuario.routes";
 
@@ -76,7 +76,50 @@ const OrcamentoController = {
         }catch (error) {
             res.status(500).json({ error: "Erro ao atualizar status do orçamento" });
         }
-    }
+    },
+
+    gerarPDF: (async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const orcamento = await prisma.orcamento.findUnique({
+                where: { id },
+                include: { itens: true, cliente: true }
+            });
+            if (!orcamento) return res.status(404).send("Orçamento não encontrado");
+
+            // Importação dinâmica para evitar problemas em ambientes sem pdfkit
+            const PDFDocument = (await import('pdfkit')).default;
+            const doc = new PDFDocument();
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Disposition", `attachment; filename=orcamento_${orcamento.numOrc}.pdf`);
+            doc.pipe(res);
+
+            doc.fontSize(18).text(`Orçamento #${orcamento.numOrc}`);
+            doc.moveDown();
+            doc.fontSize(12).text(`Cliente: ${orcamento.cliente.nome}`);
+            doc.text(`Endereço: ${orcamento.cliente.endereco}`);
+            doc.text(`Cidade: ${orcamento.cliente.cidade}`);
+            doc.text(`Telefone: ${orcamento.cliente.telefone}`);
+            doc.text(`E-mail: ${orcamento.cliente.email}`);
+            doc.text(`Data: ${new Date(orcamento.dataEmissao).toLocaleDateString()}`);
+            doc.moveDown();
+
+            doc.fontSize(14).text('Itens do Orçamento:');
+            doc.moveDown(0.5);
+            let total = 0;
+            orcamento.itens.forEach(item => {
+                const subtotal = item.quantidade * item.precoUnitario;
+                total += subtotal;
+                doc.text(`${item.quantidade}x ${item.descricao} - R$${item.precoUnitario.toFixed(2)} (Subtotal: R$${subtotal.toFixed(2)})`);
+            });
+            doc.moveDown();
+            doc.fontSize(14).text(`Total: R$${total.toFixed(2)}`);
+
+            doc.end();
+        } catch (error) {
+            res.status(500).send("Erro ao gerar PDF");
+        }
+    }) as RequestHandler,
 };
 
 export default OrcamentoController;
