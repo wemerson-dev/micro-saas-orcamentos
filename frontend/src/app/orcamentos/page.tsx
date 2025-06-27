@@ -18,6 +18,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { toast } from "sonner"
+import { useState as useModalState } from "react"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet"
 
 interface Cliente {
   id: string
@@ -39,6 +41,12 @@ export default function NovoOrcamento() {
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null)
   const [itens, setItens] = useState<Item[]>([{ quantidade: 1, descricao: "", precoUnitario: 0 }])
   const [salvando, setSalvando] = useState(false)
+  const [mensagem, setMensagem] = useState<string | null>(null)
+  const [erro, setErro] = useState<string | null>(null)
+  const [mostrarPerguntaPDF, setMostrarPerguntaPDF] = useState(false)
+  const [orcamentoId, setOrcamentoId] = useState<string | null>(null)
+  const [baixandoPDF, setBaixandoPDF] = useState(false)
+  const [pdfDisponivel, setPdfDisponivel] = useState(false)
 
   useEffect(() => {
     fetch("http://localhost:5000/Cliente/listar")
@@ -79,6 +87,9 @@ export default function NovoOrcamento() {
   const salvarOrcamento = async () => {
     if (!validarFormulario()) return
     setSalvando(true)
+    setMensagem(null)
+    setErro(null)
+    setMostrarPerguntaPDF(false)
 
     try {
       const payload = {
@@ -86,7 +97,6 @@ export default function NovoOrcamento() {
         numOrc: 9,
         dataEmissao: new Date().toISOString(),
         itens,
-        //total: totalGeral,
       }
 
       const res = await fetch("http://localhost:5000/Orcamento/criar", {
@@ -97,15 +107,41 @@ export default function NovoOrcamento() {
 
       if (!res.ok) {
         const erro = await res.text()
-        throw new Error(erro || "Erro ao salvar orçamento")
+        setErro("Erro ao salvar orçamento: " + erro)
+        return
       }
 
-      toast.success("Orçamento salvo com sucesso!")
+      const data = await res.json()
+      setMensagem("Orçamento salvo com sucesso!")
+      setOrcamentoId(data.id)
+      setMostrarPerguntaPDF(true)
     } catch (err: any) {
-      toast.error("Erro ao salvar: " + err.message)
+      setErro("Erro ao salvar: " + err.message)
     } finally {
       setSalvando(false)
     }
+  }
+
+  const handleDownloadPDF = async () => {
+    setBaixandoPDF(true)
+    try {
+      window.open(`http://localhost:5000/Orcamento/${orcamentoId}/pdf`, "_blank")
+      setPdfDisponivel(true)
+    } finally {
+      setBaixandoPDF(false)
+      setMostrarPerguntaPDF(false)
+    }
+  }
+
+  const limparFormulario = () => {
+    setClienteSelecionado(null)
+    setItens([{ quantidade: 1, descricao: "", precoUnitario: 0 }])
+    setMensagem(null)
+    setErro(null)
+    setMostrarPerguntaPDF(false)
+    setOrcamentoId(null)
+    setBaixandoPDF(false)
+    setPdfDisponivel(false)
   }
 
   return (
@@ -186,8 +222,55 @@ export default function NovoOrcamento() {
             </div>
 
             <div className="flex justify-end">
-              <Button onClick={salvarOrcamento} disabled={salvando}>{salvando ? "Salvando..." : "Salvar Orçamento"}</Button>
+              {mensagem ? (
+                <Button onClick={limparFormulario}>
+                  Criar Novo Orçamento
+                </Button>
+              ) : (
+                <Button onClick={salvarOrcamento} disabled={salvando}>
+                  {salvando ? "Salvando..." : "Salvar Orçamento"}
+                </Button>
+              )}
             </div>
+
+            {mensagem && <div className="text-green-600 font-bold my-2">{mensagem}</div>}
+            {erro && <div className="text-red-600 font-bold my-2">{erro}</div>}
+            <Sheet open={mostrarPerguntaPDF} onOpenChange={setMostrarPerguntaPDF}>
+              <SheetContent aria-modal="true" aria-labelledby="pdf-modal-title">
+                <SheetHeader>
+                  <SheetTitle id="pdf-modal-title">Download do PDF</SheetTitle>
+                </SheetHeader>
+                <div className="my-4">
+                  <p>Deseja realizar o download do PDF deste orçamento?</p>
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      onClick={handleDownloadPDF}
+                      disabled={baixandoPDF}
+                      aria-busy={baixandoPDF}
+                    >
+                      {baixandoPDF ? "Gerando PDF..." : "Sim, baixar PDF"}
+                    </Button>
+                    <Button variant="outline" onClick={() => setMostrarPerguntaPDF(false)}>
+                      Não
+                    </Button>
+                  </div>
+                </div>
+                <SheetFooter />
+              </SheetContent>
+            </Sheet>
+            {pdfDisponivel && (
+              <div className="text-blue-600 my-2" role="status">
+                PDF disponível para download
+                <a
+                  href={`http://localhost:5000/Orcamento/${orcamentoId}/pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline ml-2"
+                >
+                  Clique aqui para baixar novamente
+                </a>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
