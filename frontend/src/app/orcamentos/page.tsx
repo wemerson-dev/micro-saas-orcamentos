@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -36,6 +36,9 @@ interface Item {
   precoUnitario: number
 }
 
+// Supondo que userId está disponível via contexto ou prop
+const userId = 'a5c25a70-edcd-4aa2-a554-7d21af827ce9'//typeof window !== 'undefined' ? localStorage.getItem('userId') : null
+
 export default function NovoOrcamento() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null)
@@ -47,6 +50,19 @@ export default function NovoOrcamento() {
   const [orcamentoId, setOrcamentoId] = useState<string | null>(null)
   const [baixandoPDF, setBaixandoPDF] = useState(false)
   const [pdfDisponivel, setPdfDisponivel] = useState(false)
+  const [abrirModalCliente, setAbrirModalCliente] = useState(false)
+  const [novoCliente, setNovoCliente] = useState({
+    nome: '',
+    email: '',
+    telefone: '',
+    endereco: '',
+    bairro: '',
+    numero: '',
+    cidade: '',
+    cgc: '',
+    usuarioId: 'a5c25a70-edcd-4aa2-a554-7d21af827ce9'
+  })
+  const [carregandoCliente, setCarregandoCliente] = useState(false)
 
   useEffect(() => {
     fetch("http://localhost:5000/Cliente/listar")
@@ -130,18 +146,52 @@ export default function NovoOrcamento() {
     } finally {
       setBaixandoPDF(false)
       setMostrarPerguntaPDF(false)
+      setPdfDisponivel(true)
     }
   }
 
   const limparFormulario = () => {
-    setClienteSelecionado(null)
-    setItens([{ quantidade: 1, descricao: "", precoUnitario: 0 }])
-    setMensagem(null)
-    setErro(null)
-    setMostrarPerguntaPDF(false)
-    setOrcamentoId(null)
-    setBaixandoPDF(false)
-    setPdfDisponivel(false)
+    if (window.confirm("Tem certeza que deseja criar um novo orçamento? Os dados atuais serão perdidos.")) {
+      setItens([{ quantidade: 1, descricao: "", precoUnitario: 0 }])
+      setMensagem(null)
+      setErro(null)
+      setMostrarPerguntaPDF(false)
+      setOrcamentoId(null)
+      setBaixandoPDF(false)
+      setPdfDisponivel(false)
+    }
+  }
+
+  const handleNovoClienteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNovoCliente({ ...novoCliente, [e.target.name]: e.target.value })
+  }
+
+  const handleCadastrarCliente = async () => {
+    setCarregandoCliente(true)
+    try {
+      const payload = { ...novoCliente, numero: Number(novoCliente.numero), usuarioId: userId }
+      const res = await fetch('http://localhost:5000/Cliente/criar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!res.ok) {
+        const erro = await res.text()
+        setErro('Erro ao cadastrar cliente: ' + erro)
+        return
+      }
+      setMensagem('Cliente cadastrado com sucesso!')
+      setAbrirModalCliente(false)
+      setNovoCliente({ nome: '', email: '', telefone: '', endereco: '', bairro: '', numero: '', cidade: '', cgc: '', usuarioId: userId })
+      // Atualiza lista de clientes
+      fetch("http://localhost:5000/Cliente/listar")
+        .then(res => res.json())
+        .then(data => setClientes(data))
+    } catch (err: any) {
+      setErro('Erro ao cadastrar cliente: ' + err.message)
+    } finally {
+      setCarregandoCliente(false)
+    }
   }
 
   return (
@@ -186,7 +236,7 @@ export default function NovoOrcamento() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button variant="outline">Novo Cliente</Button>
+              <Button variant="outline" onClick={() => setAbrirModalCliente(true)}>Novo Cliente</Button>
             </div>
 
             {clienteSelecionado && (
@@ -250,7 +300,10 @@ export default function NovoOrcamento() {
                     >
                       {baixandoPDF ? "Gerando PDF..." : "Sim, baixar PDF"}
                     </Button>
-                    <Button variant="outline" onClick={() => setMostrarPerguntaPDF(false)}>
+                    <Button variant="outline" onClick={() => {
+                      setMostrarPerguntaPDF(false)
+                      setPdfDisponivel(true)
+                    }}>
                       Não
                     </Button>
                   </div>
@@ -260,6 +313,9 @@ export default function NovoOrcamento() {
             </Sheet>
             {pdfDisponivel && (
               <div className="text-blue-600 my-2" role="status">
+                <div className="text-sm text-gray-700 mb-1">
+                  O link para download do PDF estará disponível até que um novo orçamento seja criado.
+                </div>
                 PDF disponível para download
                 <a
                   href={`http://localhost:5000/Orcamento/${orcamentoId}/pdf`}
@@ -267,10 +323,35 @@ export default function NovoOrcamento() {
                   rel="noopener noreferrer"
                   className="underline ml-2"
                 >
-                  Clique aqui para baixar novamente
+                  Clique aqui para baixar
                 </a>
               </div>
             )}
+            <Sheet open={abrirModalCliente} onOpenChange={setAbrirModalCliente}>
+              <SheetContent aria-modal="true" aria-labelledby="novo-cliente-modal-title">
+                <SheetHeader>
+                  <SheetTitle id="novo-cliente-modal-title">Cadastrar Novo Cliente</SheetTitle>
+                </SheetHeader>
+                <div className="space-y-2 my-4">
+                  <Input name="nome" placeholder="Nome" value={novoCliente.nome} onChange={handleNovoClienteChange} />
+                  <Input name="email" placeholder="Email" value={novoCliente.email} onChange={handleNovoClienteChange} />
+                  <Input name="telefone" placeholder="Telefone" value={novoCliente.telefone} onChange={handleNovoClienteChange} />
+                  <Input name="endereco" placeholder="Endereço" value={novoCliente.endereco} onChange={handleNovoClienteChange} />
+                  <Input name="bairro" placeholder="Bairro" value={novoCliente.bairro} onChange={handleNovoClienteChange} />
+                  <Input name="numero" placeholder="Número" type="number" value={novoCliente.numero} onChange={handleNovoClienteChange} />
+                  <Input name="cidade" placeholder="Cidade" value={novoCliente.cidade} onChange={handleNovoClienteChange} />
+                  <Input name="cgc" placeholder="CGC" value={novoCliente.cgc} onChange={handleNovoClienteChange} />
+                </div>
+                <SheetFooter>
+                  <Button onClick={handleCadastrarCliente} disabled={carregandoCliente}>
+                    {carregandoCliente ? 'Cadastrando...' : 'Cadastrar'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setAbrirModalCliente(false)}>
+                    Cancelar
+                  </Button>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
           </CardContent>
         </Card>
       </div>
