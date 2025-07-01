@@ -340,7 +340,7 @@ export default function NovoOrcamento() {
                   <Input name="bairro" placeholder="Bairro" value={novoCliente.bairro} onChange={handleNovoClienteChange} />
                   <Input name="numero" placeholder="Número" type="number" value={novoCliente.numero} onChange={handleNovoClienteChange} />
                   <Input name="cidade" placeholder="Cidade" value={novoCliente.cidade} onChange={handleNovoClienteChange} />
-                  <Input name="cgc" placeholder="CGC" value={novoCliente.cgc} onChange={handleNovoClienteChange} />
+                  <Input name="CNPJ" placeholder="CNPJ" value={novoCliente.cgc} onChange={handleNovoClienteChange} />
                 </div>
                 <SheetFooter>
                   <Button onClick={handleCadastrarCliente} disabled={carregandoCliente}>
