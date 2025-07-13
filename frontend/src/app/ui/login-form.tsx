@@ -45,8 +45,12 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
         return;
       }
       const data: LoginResponse = await res.json();
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userId', data.usuario.id);
+      //localStorage.setItem('token', data.token);
+      //localStorage.setItem('userId', data.usuario.id);
+      //Token e userid acessivel ao servidor (middleware)
+      const vToken = 24 * 60 * 60; //24 horas
+      document.cookie = `token=${data.token}; path=/; max-age=${vToken}; SameSite=Strict`;
+      document.cookie = `userId=${data.usuario.id}; path=/; max-age=${vToken}; SameSite=Strict`;
       onLoginSuccess(data);
     } catch (err) {
       if (err instanceof Error) setErro('Erro ao conectar com o servidor: ' + err.message);
