@@ -1,6 +1,10 @@
 import { useState } from 'react';
 
-export default function RegisterForm({ onRegisterSuccess }: { onRegisterSuccess: () => void }) {
+interface RegisterFormProps {
+  onRegisterSuccess: () => void;
+}
+
+export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -34,7 +38,8 @@ export default function RegisterForm({ onRegisterSuccess }: { onRegisterSuccess:
       }
       onRegisterSuccess();
     } catch (err) {
-      setErro('Erro ao conectar com o servidor.');
+      if (err instanceof Error) setErro('Erro ao conectar com o servidor: ' + err.message);
+      else setErro('Erro ao conectar com o servidor.');
     } finally {
       setLoading(false);
     }

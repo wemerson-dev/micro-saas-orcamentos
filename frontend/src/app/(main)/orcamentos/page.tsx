@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useContext } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -18,7 +18,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { toast } from "sonner"
-import { useState as useModalState } from "react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet"
 
 interface Cliente {
@@ -131,8 +130,9 @@ export default function NovoOrcamento() {
       setMensagem("Orçamento salvo com sucesso!")
       setOrcamentoId(data.id)
       setMostrarPerguntaPDF(true)
-    } catch (err: any) {
-      setErro("Erro ao salvar: " + err.message)
+    } catch (err: unknown) {
+      if (err instanceof Error) setErro("Erro ao salvar: " + err.message)
+      else setErro("Erro ao salvar orçamento.")
     } finally {
       setSalvando(false)
     }
@@ -187,8 +187,9 @@ export default function NovoOrcamento() {
       fetch("http://localhost:5000/Cliente/listar")
         .then(res => res.json())
         .then(data => setClientes(data))
-    } catch (err: any) {
-      setErro('Erro ao cadastrar cliente: ' + err.message)
+    } catch (err: unknown) {
+      if (err instanceof Error) setErro('Erro ao cadastrar cliente: ' + err.message)
+      else setErro('Erro ao cadastrar cliente.')
     } finally {
       setCarregandoCliente(false)
     }

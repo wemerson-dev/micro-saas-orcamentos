@@ -1,6 +1,19 @@
 import { useState } from 'react';
 
-export default function LoginForm({ onLoginSuccess }: { onLoginSuccess: (data: any) => void }) {
+interface LoginResponse {
+  token: string;
+  usuario: {
+    id: string;
+    nome: string;
+    email: string;
+  };
+}
+
+interface LoginFormProps {
+  onLoginSuccess: (data: LoginResponse) => void;
+}
+
+export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
@@ -31,12 +44,13 @@ export default function LoginForm({ onLoginSuccess }: { onLoginSuccess: (data: a
         setErro('Email ou senha inválidos.');
         return;
       }
-      const data = await res.json();
+      const data: LoginResponse = await res.json();
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.usuario.id);
       onLoginSuccess(data);
     } catch (err) {
-      setErro('Erro ao conectar com o servidor.');
+      if (err instanceof Error) setErro('Erro ao conectar com o servidor: ' + err.message);
+      else setErro('Erro ao conectar com o servidor.');
     } finally {
       setLoading(false);
     }

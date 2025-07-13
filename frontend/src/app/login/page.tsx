@@ -4,9 +4,18 @@ import LoginForm from '@/app/ui/login-form';
 import RegisterForm from '@/app/ui/register-form';
 import { useRouter } from 'next/navigation';
 
+interface LoginResponse {
+  token: string;
+  usuario: {
+    id: string;
+    nome: string;
+    email: string;
+  };
+}
+
 export default function LoginPage() {
   const [showRegister, setShowRegister] = useState(false);
-  const [loginData, setLoginData] = useState<any>(null);
+  const [loginData, setLoginData] = useState<LoginResponse | null>(null);
   const router = useRouter();
 
   useEffect(() => {
