@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 
 interface LoginResponse {
@@ -13,14 +14,14 @@ interface LoginFormProps {
   onLoginSuccess: (data: LoginResponse) => void;
 }
 
+const validarEmail = (email: string) =>
+  /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email);
+
 export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const validarEmail = (email: string) =>
-    /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +36,9 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     }
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/Usuario/login', {
+      // É uma boa prática usar variáveis de ambiente para a URL da API
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/Usuario/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha }),

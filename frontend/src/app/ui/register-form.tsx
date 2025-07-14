@@ -1,3 +1,4 @@
+'use client'; // Componentes com interatividade (useState, etc) precisam desta diretiva
 import { useState } from 'react';
 
 interface RegisterFormProps {
@@ -27,7 +28,8 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
     }
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/Usuario/registrar', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/Usuario/registrar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, email, senha }),

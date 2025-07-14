@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import React, { useState, useEffect } from "react"
 import {
   AudioWaveform,
   Folders,
@@ -27,13 +27,55 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [user, setUser] = useState({
+    name: "Carregando...",
+    email: "...",
     avatar: "/avatars/shadcn.jpg",
-  },
+  })
+
+  useEffect(() => {
+    function getCookie(name: string) {
+      const value = `; ${document.cookie}`
+      const parts = value.split(`; ${name}=`)
+      if (parts.length === 2) return parts.pop()?.split(";").shift()
+    }
+
+    const userId = getCookie("userId")
+    const token = getCookie("token")
+
+    if (userId && token) {
+      // Assumindo que o endpoint para buscar dados do usuário é /Usuario/{id}
+      fetch(`http://localhost:5000/usuario/${userId}`, {
+        headers: {
+          // Adiciona o token de autenticação no cabeçalho da requisição
+          // para que a API autorize o acesso aos dados.
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Falha ao buscar dados do usuário")
+          }
+          return res.json()
+        })
+        .then((data) => {
+          setUser({
+            name: data.nome, // Ajuste os nomes dos campos conforme o retorno da sua API
+            email: data.email,
+            avatar: "/avatars/shadcn.jpg", // Pode ser dinâmico também
+          })
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar dados do usuário:", error)
+          // Opcional: redirecionar para o login ou mostrar um estado de erro
+          setUser({ name: "Erro", email: "Falha ao carregar", avatar: "/avatars/shadcn.jpg" })
+        })
+    }
+  }, [])
+
+  // Dados estáticos para o restante da sidebar
+  const data = {
   teams: [
     {
       name: "Acme Inc",
@@ -135,9 +177,8 @@ const data = {
       icon: Map,
     },
   ],
-}
+  }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -148,7 +189,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

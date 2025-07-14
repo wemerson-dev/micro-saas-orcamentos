@@ -1,39 +1,32 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get("token")?.value;
-    const pathname = request.nextUrl.pathname;
+  const token = request.cookies.get('token')?.value;
+  const { pathname } = request.nextUrl;
 
-    const isLoginPage = pathname === "/login"
-    const isProtectedRoute = pathname !== "/login" && pathname !== "/"
+  const isPublicPath = pathname === '/login';
 
-    
-    if (!token && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/login", request.url))
-    }
+  // Se o usuário tem token e está tentando acessar a página de login,
+  // redireciona para o dashboard.
+  if (token && isPublicPath) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
 
-    if (token && isLoginPage) {
-    return NextResponse.redirect(new URL("/", request.url))
-    }
+  // Se o usuário não tem token e está tentando acessar uma página protegida,
+  // redireciona para a página de login.
+  if (!token && !isPublicPath) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
 
-    
-    const cAuth = Boolean(token);
-    const cLoginPage = request.nextUrl.pathname.startsWith("/login");
-
-    if (!cAuth && !cLoginPage) {
-        return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    if (cAuth && cLoginPage) {
-        return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    return NextResponse.next();
+  return NextResponse.next();
 }
 
+// O matcher define quais rotas serão interceptadas pelo middleware.
 export const config = {
-    matcher: [
-        '/((?!_next|static|favicon.ico).*)',
-    ]
+  matcher: [
+    // Intercepta todas as rotas, exceto as de API, arquivos estáticos do Next.js e arquivos públicos.
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 };
+

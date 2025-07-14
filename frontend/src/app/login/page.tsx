@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import LoginForm from '@/app/ui/login-form';
 import RegisterForm from '@/app/ui/register-form';
 import { useRouter } from 'next/navigation';
@@ -15,22 +15,14 @@ interface LoginResponse {
 
 export default function LoginPage() {
   const [showRegister, setShowRegister] = useState(false);
-  const [loginData, setLoginData] = useState<LoginResponse | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    if (loginData) {
-      const timer = setTimeout(() => {
-        router.push('/dashboard');
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [loginData, router]);
-
-  if (loginData) {
-    return <div className="flex items-center justify-center min-h-screen text-green-700 text-xl font-bold">Login realizado com sucesso! Redirecionando...</div>;
+  const handleLoginSuccess = (data: LoginResponse) => {
+    // Após o sucesso do login, o formulário já salvou os cookies.
+    // Agora, apenas redirecionamos o usuário para o dashboard.
+    // Uma mensagem de sucesso pode ser mostrada com um "toast" ou notificação, se desejado.
+    router.push('/dashboard');
   }
-
   return (
     <main className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md p-6 bg-white rounded shadow">
@@ -47,7 +39,7 @@ export default function LoginPage() {
           </>
         ) : (
           <>
-            <LoginForm onLoginSuccess={setLoginData} />
+            <LoginForm onLoginSuccess={handleLoginSuccess} />
             <button
               className="mt-2 text-blue-600 underline"
               onClick={() => setShowRegister(true)}
