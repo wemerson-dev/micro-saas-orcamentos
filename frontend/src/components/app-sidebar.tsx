@@ -53,9 +53,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           Authorization: `Bearer ${token}`,
         },
       })
-        .then((res) => {
+        .then(async(res) => {
           if (!res.ok) {
-            throw new Error("Falha ao buscar dados do usuário")
+            // Se a resposta não for OK, o corpo provavelmente é HTML (página de erro) ou texto.
+            // Devemos ler como texto para evitar o erro de parsing de JSON.
+            const errorText = await res.text();
+            console.error("A API não retornou JSON. Conteúdo da resposta:", errorText);
+            throw new Error(`Falha ao buscar dados do usuário. Status: ${res.status}`);
           }
           return res.json()
         })
