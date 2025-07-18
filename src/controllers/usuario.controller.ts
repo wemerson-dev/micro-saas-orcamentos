@@ -70,6 +70,27 @@ class UsuarioController  {
             res.status(500).json({ erro: "Erro ao listar usuários" });
         }
     }
+    static async buscarPorId(req: Request, res: Response): Promise<void> {
+        try {
+          const { id } = req.params;
+      
+          const usuario = await prisma.usuario.findUnique({
+            where: { id },
+            select: { id: true, nome: true, email: true } // limitar o retorno
+          });
+      
+          if (!usuario) {
+            res.status(404).json({ erro: "Usuário não encontrado" });
+            return;
+          }
+      
+          res.json(usuario);
+        } catch (error) {
+          console.error("Erro ao buscar usuário:", error);
+          res.status(500).json({ erro: "Erro ao buscar usuário" });
+        }
+      }
+      
 };
 
 export default UsuarioController;

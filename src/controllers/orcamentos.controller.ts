@@ -1,5 +1,6 @@
 import { Request, Response, RequestHandler } from "express";
 import prisma from "../prisma";
+import { gerarPDF } from "../utils/gerarPdf";
 //import router from "./usuario.routes";
 
 
@@ -78,48 +79,52 @@ const OrcamentoController = {
         }
     },
 
-    gerarPDF: (async (req: Request, res: Response) => {
-        try {
-            const { id } = req.params;
-            const orcamento = await prisma.orcamento.findUnique({
-                where: { id },
-                include: { itens: true, cliente: true }
-            });
-            if (!orcamento) return res.status(404).send("Orçamento não encontrado");
+  gerarPDF:(async(req: Request, res: Response) => {
+    try {
+      const { id } = req.params
+      const orcamento = await prisma.orcamento.findUnique({
+        where: { id },
+        include: { itens: true, cliente: true }
+      })
 
-            // Importação dinâmica para evitar problemas em ambientes sem pdfkit
-            const PDFDocument = (await import('pdfkit')).default;
-            const doc = new PDFDocument();
-            res.setHeader("Content-Type", "application/pdf");
-            res.setHeader("Content-Disposition", `attachment; filename=orcamento_${orcamento.numOrc}.pdf`);
-            doc.pipe(res);
+      if (!orcamento) return res.status(404).send("Orçamento não encontrado")
 
-            doc.fontSize(18).text(`Orçamento #${orcamento.numOrc}`);
-            doc.moveDown();
-            doc.fontSize(12).text(`Cliente: ${orcamento.cliente.nome}`);
-            doc.text(`Endereço: ${orcamento.cliente.endereco}`);
-            doc.text(`Cidade: ${orcamento.cliente.cidade}`);
-            doc.text(`Telefone: ${orcamento.cliente.telefone}`);
-            doc.text(`E-mail: ${orcamento.cliente.email}`);
-            doc.text(`Data: ${new Date(orcamento.dataEmissao).toLocaleDateString()}`);
-            doc.moveDown();
-
-            doc.fontSize(14).text('Itens do Orçamento:');
-            doc.moveDown(0.5);
-            let total = 0;
-            orcamento.itens.forEach(item => {
-                const subtotal = item.quantidade * item.precoUnitario;
-                total += subtotal;
-                doc.text(`${item.quantidade}x ${item.descricao} - R$${item.precoUnitario.toFixed(2)} (Subtotal: R$${subtotal.toFixed(2)})`);
-            });
-            doc.moveDown();
-            doc.fontSize(14).text(`Total: R$${total.toFixed(2)}`);
-
-            doc.end();
-        } catch (error) {
-            res.status(500).send("Erro ao gerar PDF");
+      const itens = orcamento.itens.map(item => {
+        const subtotal = item.quantidade * item.precoUnitario
+        return {
+          quantidade: item.quantidade,
+          descricao: item.descricao,
+          precoUnitario: item.precoUnitario.toFixed(2),
+          subtotal: subtotal.toFixed(2)
         }
-    }) as RequestHandler,
-};
+      })
 
+      const totalGeral = itens.reduce((acc, item) => acc + parseFloat(item.subtotal), 0)
+
+      const dataPDF = {
+        numOrc: String(orcamento.numOrc),
+        dataEmissao: new Date(orcamento.dataEmissao).toLocaleDateString(),
+        cliente: {
+            nome: orcamento.cliente.nome,
+            endereco: orcamento.cliente.endereco,
+            cidade: orcamento.cliente.cidade,
+            telefone: orcamento.cliente.telefone ?? '',
+            email: orcamento.cliente.email
+        },
+        itens,
+        totalGeral: totalGeral.toFixed(2)
+      }
+
+      const pdfBuffer = await gerarPDF(dataPDF)
+      res.setHeader("Content-Type", "application/pdf")
+      res.setHeader("Content-Disposition", `inline; filename=orcamento_${orcamento.numOrc}.pdf`)
+      res.send(pdfBuffer)
+
+    } catch (error) {   
+      console.error("Erro ao gerar PDF", error)
+      console.log("Erro")
+      res.status(500).send("Erro ao gerar PDF")
+    }   
+  }) as RequestHandler,
+}    
 export default OrcamentoController;

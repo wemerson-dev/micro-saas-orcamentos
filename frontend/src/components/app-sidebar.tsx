@@ -46,7 +46,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     if (userId && token) {
       // Assumindo que o endpoint para buscar dados do usuário é /Usuario/{id}
-      fetch(`http://localhost:5000/usuario/${userId}`, {
+      fetch(`http://localhost:5000/usuario/buscar/${userId}`, {
         headers: {
           // Adiciona o token de autenticação no cabeçalho da requisição
           // para que a API autorize o acesso aos dados.

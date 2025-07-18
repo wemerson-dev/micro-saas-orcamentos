@@ -36,7 +36,7 @@ interface Item {
 }
 
 // Supondo que userId está disponível via contexto ou prop
-const userId = 'a5c25a70-edcd-4aa2-a554-7d21af827ce9'//typeof window !== 'undefined' ? localStorage.getItem('userId') : null
+const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null //'a5c25a70-edcd-4aa2-a554-7d21af827ce9'
 
 export default function NovoOrcamento() {
   const [clientes, setClientes] = useState<Cliente[]>([])
@@ -59,7 +59,7 @@ export default function NovoOrcamento() {
     numero: '',
     cidade: '',
     cgc: '',
-    usuarioId: 'a5c25a70-edcd-4aa2-a554-7d21af827ce9'
+    usuarioId: userId
   })
   const [carregandoCliente, setCarregandoCliente] = useState(false)
 
@@ -109,7 +109,7 @@ export default function NovoOrcamento() {
     try {
       const payload = {
         clienteId: clienteSelecionado!.id,
-        numOrc: 9,
+        numOrc: '',
         dataEmissao: new Date().toISOString(),
         itens,
       }
