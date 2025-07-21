@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import prisma from "../prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { log } from "console";
 
 class UsuarioController  {
     //async registrar(req: Request, res: Response){
@@ -90,7 +91,6 @@ class UsuarioController  {
           res.status(500).json({ erro: "Erro ao buscar usuário" });
         }
       }
-      
 };
 
 export default UsuarioController;

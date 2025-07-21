@@ -23,6 +23,7 @@ model Usuario {
   email    String   @unique
   senha    String
   clientes Cliente[]
+  logoPath String?
 }
 
 model Cliente {
