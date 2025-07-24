@@ -10,6 +10,12 @@
       margin: 40px;
       color: #333;
     }
+    
+    .logo {
+      max-width: 160px;
+      max-height: 80px;
+      object-fit: contain; /* evita distorções */
+    }
 
     header {
       text-align: center;
@@ -58,6 +64,11 @@
 <body>
 
 <header>
+  <div class="header">
+    {{#if logoUrl}}
+      <img src="{{logoUrl}}" class="logo" alt="Logo da empresa" />
+    {{/if}}
+  </div>
   <h1>ORÇAMENTO Nº {{numOrc}}</h1>
   <div class="header-info">
     <div>Data: {{dataEmissao}}</div>
