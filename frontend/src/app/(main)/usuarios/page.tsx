@@ -1,6 +1,4 @@
 "use client"
-
-
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -23,26 +21,29 @@ import axios from "axios"
 export default function pagUser() {
     const [logoFile, setLogoFile] = useState<File | null>(null)
     const [uploadStatus, setUploadStatus] = useState<string>("")
-    const userId = "USER_ID_HERE" // Replace with actual user ID (e.g., from auth context)
+    const userId = "66219095-db77-46a5-9da5-c4ff27123b27" // Substitua pelo userId real (e.g., de um contexto de autenticação)
 
     const handleLogoUpload = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!logoFile) {
-            setUploadStatus("Por favor, selecione um arquivo.")
+            setUploadStatus("Por favor, selecione uma imagem.")
             return
         }
 
         const formData = new FormData()
-        formData.append("file", logoFile)
+        formData.append("logo", logoFile)
         formData.append("userId", userId)
 
         try {
             const response = await axios.post("/upload/logo", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: {
+                    // Não defina Content-Type manualmente; deixe axios gerenciar
+                    Authorization: `Bearer ${localStorage.getItem("token")}`, // Substitua pelo seu método de autenticação
+                },
             })
             setUploadStatus("Logo enviada com sucesso!")
-        } catch (error) {
-            setUploadStatus("Erro ao enviar logo. Tente novamente.")
+        } catch (error: any) {
+            setUploadStatus(error.response?.data?.erro || "Erro ao enviar logo. Tente novamente.")
             console.error(error)
         }
     }
