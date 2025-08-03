@@ -67,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           setUser({
             name: data.nome, // Ajuste os nomes dos campos conforme o retorno da sua API
             email: data.email,
-            avatar: "/avatars/shadcn.jpg", // Pode ser dinâmico também
+            avatar: "C:/ProjetoMicroSaas/micro-saas-orcamentos/uploads/1753405051291.png", // Pode ser dinâmico também
           })
         })
         .catch((error) => {

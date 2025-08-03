@@ -1,5 +1,11 @@
 'use client';
 import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext'; // Ajuste o caminho
+import { useRouter } from 'next/navigation'; // Ou useRouter para Next.js
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface LoginResponse {
   token: string;
@@ -11,8 +17,8 @@ interface LoginResponse {
 }
 
 interface LoginFormProps {
-  onLoginSuccess: (data: LoginResponse) => void;
-}
+  onLoginSuccess?: (data: LoginResponse) => void; // Tornar opcional
+} 
 
 const validarEmail = (email: string) =>
   /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email);
@@ -22,6 +28,8 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter(); // Ou useRouter para Next.js
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +44,6 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     }
     setLoading(true);
     try {
-      // É uma boa prática usar variáveis de ambiente para a URL da API
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       const res = await fetch(`${apiUrl}/Usuario/login`, {
         method: 'POST',
@@ -44,53 +51,72 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
         body: JSON.stringify({ email, senha }),
       });
       if (!res.ok) {
-        setErro('Email ou senha inválidos.');
+        const errorData = await res.json();
+        setErro(errorData.erro || 'Email ou senha inválidos.');
         return;
       }
       const data: LoginResponse = await res.json();
-      //localStorage.setItem('token', data.token);
-      //localStorage.setItem('userId', data.usuario.id);
-      //Token e userid acessivel ao servidor (middleware)
-      const vToken = 24 * 60 * 60; //24 horas
-      document.cookie = `token=${data.token}; path=/; max-age=${vToken}; SameSite=Strict`;
-      document.cookie = `userId=${data.usuario.id}; path=/; max-age=${vToken}; SameSite=Strict`;
-      onLoginSuccess(data);
+      console.log('Resposta do login:', data);
+
+      // Salvar token e userId usando AuthContext
+      login(data.token, data.usuario.id);
+
+      // Chamar onLoginSuccess, se fornecido
+      if (onLoginSuccess) {
+        onLoginSuccess(data);
+      }
+
+      // Redirecionar para a página de perfil
+      router.push('/dashboard');
     } catch (err) {
-      if (err instanceof Error) setErro('Erro ao conectar com o servidor: ' + err.message);
-      else setErro('Erro ao conectar com o servidor.');
+      console.error('Erro ao conectar com o servidor:', err);
+      setErro(err instanceof Error ? `Erro ao conectar com o servidor: ${err.message}` : 'Erro ao conectar com o servidor.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        required
-        className="w-full border p-2 rounded"
-        autoComplete="username"
-      />
-      <input
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={e => setSenha(e.target.value)}
-        required
-        className="w-full border p-2 rounded"
-        autoComplete="current-password"
-      />
-      {erro && <div className="text-red-600">{erro}</div>}
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white p-2 rounded"
-        disabled={loading}
-      >
-        {loading ? 'Entrando...' : 'Entrar'}
-      </button>
-    </form>
+    <Card className="w-full max-w-md mx-auto mt-10">
+      <CardHeader>
+        <CardTitle>Login</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Digite seu e-mail"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              autoComplete="username"
+            />
+          </div>
+          <div>
+            <Label htmlFor="senha">Senha</Label>
+            <Input
+              id="senha"
+              type="password"
+              placeholder="Digite sua senha"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+          </div>
+          {erro && <div className="text-red-600 text-sm">{erro}</div>}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full"
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
-} 
+}

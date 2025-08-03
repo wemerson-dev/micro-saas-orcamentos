@@ -21,30 +21,76 @@ import axios from "axios"
 export default function pagUser() {
     const [logoFile, setLogoFile] = useState<File | null>(null)
     const [uploadStatus, setUploadStatus] = useState<string>("")
-    const userId = "66219095-db77-46a5-9da5-c4ff27123b27" // Substitua pelo userId real (e.g., de um contexto de autenticação)
+
+       // Função para decodificar o token JWT e obter o userId
+    const getUserIdFromToken = (token: string): string | null => {
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            return payload.userId || null; // Ajuste 'userId' para a chave correta no payload
+        } catch (error) {
+            console.error("Erro ao decodificar token:", error);
+            return null;
+        }
+    }
 
     const handleLogoUpload = async (e: React.FormEvent) => {
         e.preventDefault()
+        setUploadStatus("") // Limpar status anterior
+
+        // Validar arquivo
         if (!logoFile) {
             setUploadStatus("Por favor, selecione uma imagem.")
             return
         }
+        if (!logoFile.type.startsWith("image/")) {
+            setUploadStatus("Apenas arquivos de imagem são permitidos (PNG, JPEG, etc.).")
+            return
+        }
+        if (logoFile.size > 2 * 1024 * 1024) {
+            setUploadStatus("O arquivo excede o limite de 2MB.")
+            return
+        }
 
+        // Validar token
+        const token = localStorage.getItem("token") // Substitua pelo seu método de autenticação
+        console.log("Token encontrado:", token);
+        if (!token) {
+            setUploadStatus("Token de autenticação não encontrado. faça o login novamente...")
+            return
+        }
+
+        // Obter userId do token
+        const userId = getUserIdFromToken(token);
+        console.log("userId extraído:", userId);
+        if (!userId) {
+            setUploadStatus("Não foi possível obter o ID do usuário. Verifique o token.")
+            return
+        }        
+
+        // Criar FormData
         const formData = new FormData()
         formData.append("logo", logoFile)
         formData.append("userId", userId)
 
+        // Logar conteúdo do FormData para depuração
+        console.log("FormData conteúdo:")
+        for (const pair of formData.entries()) {
+            console.log(`${pair[0]}:`, pair[1])
+        }
+
         try {
             const response = await axios.post("/upload/logo", formData, {
                 headers: {
-                    // Não defina Content-Type manualmente; deixe axios gerenciar
-                    Authorization: `Bearer ${localStorage.getItem("token")}`, // Substitua pelo seu método de autenticação
+                    Authorization: `Bearer ${token}`,
+                    // Não definir Content-Type; axios gerencia automaticamente
                 },
             })
-            setUploadStatus("Logo enviada com sucesso!")
+            setUploadStatus("Logo enviada com sucesso! Caminho: " + response.data.caminho)
+            console.log("Resposta do servidor:", response.data)
         } catch (error: any) {
-            setUploadStatus(error.response?.data?.erro || "Erro ao enviar logo. Tente novamente.")
-            console.error(error)
+            const errorMessage = error.response?.data?.erro || error.message || "Erro ao enviar logo. Tente novamente."
+            setUploadStatus(errorMessage)
+            console.error("Erro na requisição:", error.response || error)
         }
     }
 
