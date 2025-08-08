@@ -1,32 +1,32 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
+// Esta função pode ser marcada como `async` se você precisar usar `await`
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
-  const { pathname } = request.nextUrl;
+  // 1. Pega o token dos cookies da requisição
+  const token = request.cookies.get('token')?.value
 
-  const isPublicPath = pathname === '/login';
-
-  // Se o usuário tem token e está tentando acessar a página de login,
-  // redireciona para o dashboard.
-  if (token && isPublicPath) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // 2. Se o usuário não tem token e está tentando acessar uma rota protegida (ex: /dashboard)
+  //    redireciona para a página de login.
+  if (!token && request.nextUrl.pathname.startsWith('/dashboard')) {
+    const loginUrl = new URL('/login', request.url)
+    return NextResponse.redirect(loginUrl)
   }
 
-  // Se o usuário não tem token e está tentando acessar uma página protegida,
-  // redireciona para a página de login.
-  if (!token && !isPublicPath) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  // 3. Se o usuário TEM um token e está tentando acessar a página de login,
+  //    redireciona para o dashboard. Isso evita que usuários logados vejam a tela de login.
+  if (token && request.nextUrl.pathname === '/login') {
+    const dashboardUrl = new URL('/dashboard', request.url)
+    return NextResponse.redirect(dashboardUrl)
   }
 
-  return NextResponse.next();
+  // 4. Se nenhuma das condições acima for atendida, permite que a requisição continue.
+  return NextResponse.next()
 }
 
-// O matcher define quais rotas serão interceptadas pelo middleware.
+// O `matcher` define em quais rotas o middleware será executado.
+// Isso é mais eficiente do que executar em todas as requisições.
 export const config = {
-  matcher: [
-    // Intercepta todas as rotas, exceto as de API, arquivos estáticos do Next.js e arquivos públicos.
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
-};
+  matcher: ['/dashboard/:path*', '/login'],
+}
 

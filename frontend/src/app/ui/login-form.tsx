@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext'; // Ajuste o caminho
-import { useRouter } from 'next/navigation'; // Ou useRouter para Next.js
+//import { useRouter } from 'next/navigation'; // Ou useRouter para Next.js
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const router = useRouter(); // Ou useRouter para Next.js
+  //const router = useRouter(); // Ou useRouter para Next.js
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +45,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     setLoading(true);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${apiUrl}/Usuario/login`, {
+      const res = await fetch(`${apiUrl}/usuario/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha }),
@@ -61,13 +61,23 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
       // Salvar token e userId usando AuthContext
       login(data.token, data.usuario.id);
 
+      // Também salvar em cookies para que Middleware e layouts no servidor consigam ler
+      const maxAgeSeconds = 60 * 60 * 8; // 8 horas (mesmo do backend)
+      try {
+        document.cookie = `token=${data.token}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax`;
+        document.cookie = `userId=${data.usuario.id}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax`;
+      } catch (cookieErr) {
+        console.warn('Falha ao escrever cookies:', cookieErr);
+      }
+
       // Chamar onLoginSuccess, se fornecido
       if (onLoginSuccess) {
+        console.log('Chamando onLoginSuccess com:', data);
         onLoginSuccess(data);
       }
 
       // Redirecionar para a página de perfil
-      router.push('/dashboard');
+      //router.push('/dashboard');
     } catch (err) {
       console.error('Erro ao conectar com o servidor:', err);
       setErro(err instanceof Error ? `Erro ao conectar com o servidor: ${err.message}` : 'Erro ao conectar com o servidor.');

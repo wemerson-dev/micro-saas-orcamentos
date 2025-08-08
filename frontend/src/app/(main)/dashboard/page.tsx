@@ -1,24 +1,24 @@
-"use client"
+'use client';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
-export default function Dashboard() {
-  // O hook useAuth() para verificar a autenticação não é mais necessário aqui,
-  // pois o middleware já protege esta página. Se o useAuth() também busca
-  // dados do usuário, essa lógica pode ser mantida, mas a parte de
-  // redirecionamento deve ser removida.
-  // Para corrigir o problema imediato, removemos a chamada `useAuth()`.
+export default function DashboardPage() {
+  const { token } = useAuth();
   const router = useRouter();
 
-  function logout() {
-    // Remove os cookies de autenticação ao expirar a data deles
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'userId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    // Redireciona para a página de login usando o router do Next.js
-    router.push('/login');
-  }
+  useEffect(() => {
+    console.log('Dashboard: Verificando token:', token);
+    if (!token) {
+      console.log('Dashboard: Token não encontrado, redirecionando para /login');
+      router.push('/login');
+    }
+  }, [token, router]);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Bem-vindo ao Dashboard!</h1>
+    <div>
+      <h1>Dashboard</h1>
+      <p>Bem-vindo ao dashboard!</p>
     </div>
   );
 }

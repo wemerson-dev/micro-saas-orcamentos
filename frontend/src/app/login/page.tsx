@@ -21,28 +21,35 @@ export default function LoginPage() {
     // Após o sucesso do login, o formulário já salvou os cookies.
     // Agora, apenas redirecionamos o usuário para o dashboard.
     // Uma mensagem de sucesso pode ser mostrada com um "toast" ou notificação, se desejado.
-    router.push('/dashboard');
+    console.log('handleLoginSuccess chamado, redirecionando para /dashboard:', data);
+    // Usar router.replace é melhor para páginas de login, pois impede o usuário
+    // de voltar para a página de login com o botão "voltar" do navegador.
+    router.replace('/dashboard');
   }
+
+  const toggleForm = () => setShowRegister((prev) => !prev);
+
   return (
     <main className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md p-6 bg-white rounded shadow">
-        <h1 className="text-2xl font-bold mb-4 text-center">Entrar</h1>
         {showRegister ? (
           <>
+            <h1 className="text-2xl font-bold mb-4 text-center">Cadastrar</h1>
             <RegisterForm onRegisterSuccess={() => setShowRegister(false)} />
             <button
               className="mt-2 text-blue-600 underline"
-              onClick={() => setShowRegister(false)}
+              onClick={toggleForm}
             >
               Já tem conta? Entrar
             </button>
           </>
         ) : (
           <>
+            <h1 className="text-2xl font-bold mb-4 text-center">Entrar</h1>
             <LoginForm onLoginSuccess={handleLoginSuccess} />
             <button
               className="mt-2 text-blue-600 underline"
-              onClick={() => setShowRegister(true)}
+              onClick={toggleForm}
             >
               Não tem conta? Cadastre-se
             </button>
