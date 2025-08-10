@@ -26,7 +26,8 @@ export default function pagUser() {
     const getUserIdFromToken = (token: string): string | null => {
         try {
             const payload = JSON.parse(atob(token.split(".")[1]));
-            return payload.userId || null; // Ajuste 'userId' para a chave correta no payload
+            // O backend assina o JWT como { id: usuario.id }
+            return payload.id || payload.userId || null;
         } catch (error) {
             console.error("Erro ao decodificar token:", error);
             return null;
@@ -79,7 +80,8 @@ export default function pagUser() {
         }
 
         try {
-            const response = await axios.post("/upload/logo", formData, {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+            const response = await axios.post(`${apiUrl}/usuario/upload/logo`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     // Não definir Content-Type; axios gerencia automaticamente

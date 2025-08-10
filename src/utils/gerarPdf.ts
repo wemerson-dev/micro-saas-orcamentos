@@ -20,6 +20,7 @@ interface OrcamentoData {
     subtotal: string
   }[]
   totalGeral: string
+  logoPath?: string
 }
 
 export async function gerarPDF(orçamento: OrcamentoData): Promise<Buffer> {

@@ -84,7 +84,7 @@ const OrcamentoController = {
       const { id } = req.params
       const orcamento = await prisma.orcamento.findUnique({
         where: { id },
-        include: { itens: true, cliente: true }
+        include: { itens: true, cliente: { include: { usuario: true } } }
       })
 
       if (!orcamento) return res.status(404).send("Orçamento não encontrado")
@@ -101,6 +101,10 @@ const OrcamentoController = {
 
       const totalGeral = itens.reduce((acc, item) => acc + parseFloat(item.subtotal), 0)
 
+      const logoPathDb = orcamento.cliente.usuario.logoPath ?? undefined
+      const baseUrl = `${req.protocol}://${req.get('host')}`
+      const logoAbsoluteUrl = logoPathDb ? `${baseUrl}${logoPathDb}` : undefined
+
       const dataPDF = {
         numOrc: String(orcamento.numOrc),
         dataEmissao: new Date(orcamento.dataEmissao).toLocaleDateString(),
@@ -112,7 +116,8 @@ const OrcamentoController = {
             email: orcamento.cliente.email
         },
         itens,
-        totalGeral: totalGeral.toFixed(2)
+        totalGeral: totalGeral.toFixed(2),
+        logoPath: logoAbsoluteUrl
       }
 
       const pdfBuffer = await gerarPDF(dataPDF)
