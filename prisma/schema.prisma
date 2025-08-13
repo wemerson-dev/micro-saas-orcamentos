@@ -23,6 +23,13 @@ model Usuario {
   nome     String
   email    String   @unique
   senha    String
+  endereco String?
+  bairro   String?
+  numero   Int?
+  cidade   String?
+  telefone String?
+  CEP      String?
+  UF       String?
   clientes Cliente[]
   logoPath String?
 }

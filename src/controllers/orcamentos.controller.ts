@@ -113,11 +113,22 @@ const OrcamentoController = {
             endereco: orcamento.cliente.endereco,
             cidade: orcamento.cliente.cidade,
             telefone: orcamento.cliente.telefone ?? '',
-            email: orcamento.cliente.email
+            email: orcamento.cliente.email,
         },
         itens,
         totalGeral: totalGeral.toFixed(2),
-        logoPath: logoAbsoluteUrl
+        logoPath: logoAbsoluteUrl,
+        usuario: {
+          nome: orcamento.cliente.usuario.nome,
+          email: orcamento.cliente.usuario.email,
+          endereco: orcamento.cliente.usuario.endereco ?? '',
+          bairro: orcamento.cliente.usuario.bairro ?? '',
+          cidade: orcamento.cliente.usuario.cidade ?? '',
+          CEP: orcamento.cliente.usuario.CEP ?? '',
+          numero: orcamento.cliente.usuario.numero ?? 0,
+          telefone: orcamento.cliente.usuario.telefone ?? '',
+          UF: orcamento.cliente.usuario.UF ?? '',
+        }
       }
 
       const pdfBuffer = await gerarPDF(dataPDF)

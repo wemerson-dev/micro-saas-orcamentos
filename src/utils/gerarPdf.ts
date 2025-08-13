@@ -21,6 +21,17 @@ interface OrcamentoData {
   }[]
   totalGeral: string
   logoPath?: string
+  usuario: {
+    nome: string
+    email: string
+    endereco: string
+    bairro: string
+    cidade: string
+    CEP: string
+    numero: number
+    telefone: string
+    UF: string
+  }
 }
 
 export async function gerarPDF(orçamento: OrcamentoData): Promise<Buffer> {

@@ -11,6 +11,8 @@ router.post("/login", UsuarioController.login);
 router.get("/listar", UsuarioController.uListar);
 router.get("/buscar/:id", UsuarioController.buscarPorId);
 router.post("/upload/logo", verificarToken, upload.single("logo"), uploadLogo);
+router.get("/me", verificarToken, (UsuarioController as any).me);
+router.put("/atualizar", verificarToken, (UsuarioController as any).atualizar);
 
 
 export default router;
