@@ -145,21 +145,43 @@ export default function pagUser() {
                                 </form>
                             </div>
                             <div className="flex-1 space-y-4">
-                                <div>
-                                    <Label htmlFor="name">Nome</Label>
-                                    <Input className="flex flex-col w-70 mt-1" id="name" placeholder="Nome completo" defaultValue="Renan" />
-                                </div>
-                                <div>
-                                    <Label className="mt-1.5" htmlFor="email">E-Mail</Label>
-                                    <Input className="mt-1" id="email" placeholder="insira se Email" defaultValue="renan@gmail.com" />
-                                </div>
-                                <div>
-                                    <Label className="mt-1.5" htmlFor="empresa">Empresa</Label>
-                                    <Input className="mt-1" id="empresa" placeholder="Nome da empresa" defaultValue="GetDoc" />
-                                </div>
-                                <div>
-                                    <Label className="mt-1.5" htmlFor="wordpass">Senha</Label>
-                                    <Input className="mt-1" id="wordpass" placeholder="Sua Senha" defaultValue="******" />
+                                <div className="grid grid-cols-12 md:grid-cols-3 gap-2.5">
+                                    <div>
+                                        <Label htmlFor="name">Nome</Label>
+                                        <Input className="col-span-6" id="name" placeholder="Nome completo" defaultValue="" />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="email">E-Mail</Label>
+                                        <Input id="email" placeholder="insira se Email" defaultValue="" />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="wordpass">Senha</Label>
+                                        <Input id="wordpass" placeholder="Sua Senha" defaultValue="******" />
+                                    </div>  
+                                    <div>
+                                        <Label htmlFor="company">Endereco</Label>
+                                        <Input id="company" placeholder="Endereço" defaultValue="" />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="bairro">Bairro</Label>
+                                        <Input className="col-span-6" id="Bairro" placeholder="Bairro" defaultValue="" />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="number">Nº</Label>
+                                        <Input id="number" placeholder="Número" defaultValue="" />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="city">Cidade</Label>
+                                        <Input id="city" placeholder="Informe a Cidade" defaultValue="" />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="cPostal">CEP</Label>
+                                        <Input id="cPostal" placeholder="Informe o CEP" defaultValue="" />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="uf">UF</Label>
+                                        <Input id="uf" placeholder="Informe a UF" defaultValue="" />
+                                    </div>    
                                 </div>
                                 <Separator />
                                 <div className="flex justify-end mt-2">
@@ -173,3 +195,12 @@ export default function pagUser() {
         </SidebarInset>
     )
 }
+                                    
+
+
+                                
+                    
+                                
+                    
+                                
+                    

@@ -242,12 +242,30 @@ export default function NovoOrcamento() {
 
             {clienteSelecionado && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5">
-                <div><Label>Empresa</Label><Input disabled value={clienteSelecionado.nome} /></div>
-                <div><Label>Endereço</Label><Input disabled value={clienteSelecionado.endereco} /></div>
-                <div><Label>Cidade</Label><Input disabled value={clienteSelecionado.cidade} /></div>
-                <div><Label>Telefone</Label><Input disabled value={clienteSelecionado.telefone} /></div>
-                <div><Label>E-mail</Label><Input disabled value={clienteSelecionado.email} /></div>
-                <div><Label>NºOrçamento</Label><Input disabled value={'#'}/></div>
+                <div>
+                  <Label>Empresa</Label>
+                  <Input disabled value={clienteSelecionado.nome} />
+                </div>
+                <div>
+                  <Label>Endereço</Label>
+                  <Input disabled value={clienteSelecionado.endereco} />
+                </div>
+                <div>
+                  <Label>Cidade</Label>
+                  <Input disabled value={clienteSelecionado.cidade} />
+                </div>
+                <div>
+                  <Label>Telefone</Label>
+                  <Input disabled value={clienteSelecionado.telefone} />
+                </div>
+                <div>
+                  <Label>E-mail</Label>
+                  <Input disabled value={clienteSelecionado.email} />
+                </div>
+                <div>
+                  <Label>NºOrçamento</Label>
+                  <Input disabled value={'#'}/>
+                </div>
               </div>
             )}
 
