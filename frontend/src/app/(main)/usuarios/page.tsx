@@ -145,32 +145,28 @@ export default function pagUser() {
                                 </form>
                             </div>
                             <div className="flex-1 space-y-4">
-                                <div className="grid grid-cols-12 md:grid-cols-3 gap-2.5">
-                                    <div>
-                                        <Label htmlFor="name">Nome</Label>
-                                        <Input className="col-span-6" id="name" placeholder="Nome completo" defaultValue="" />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="email">E-Mail</Label>
-                                        <Input id="email" placeholder="insira se Email" defaultValue="" />
-                                    </div>
-                                    <div>
+                                <div>
+                                    <Label htmlFor="name">Nome</Label>
+                                    <Input className="col-span-6" id="name" placeholder="Nome completo" defaultValue="" />
+                                </div>
+                                <div>
+                                    <Label htmlFor="email">E-Mail</Label>
+                                    <Input id="email" placeholder="insira se Email" defaultValue="" />
+                                </div>
+                                <div className="grid grid-cols-12 md:grid-cols-4 gap-2.5">
+                                    {/*<div>
                                         <Label htmlFor="wordpass">Senha</Label>
                                         <Input id="wordpass" placeholder="Sua Senha" defaultValue="******" />
-                                    </div>  
-                                    <div>
+                                    </div> */} 
+                                    <div className="md:col-span-2">
                                         <Label htmlFor="company">Endereco</Label>
                                         <Input id="company" placeholder="Endereço" defaultValue="" />
                                     </div>
-                                    <div>
+                                    <div className="md:col-span-2">
                                         <Label htmlFor="bairro">Bairro</Label>
                                         <Input className="col-span-6" id="Bairro" placeholder="Bairro" defaultValue="" />
                                     </div>
-                                    <div>
-                                        <Label htmlFor="number">Nº</Label>
-                                        <Input id="number" placeholder="Número" defaultValue="" />
-                                    </div>
-                                    <div>
+                                    <div className="md:col-span-2">
                                         <Label htmlFor="city">Cidade</Label>
                                         <Input id="city" placeholder="Informe a Cidade" defaultValue="" />
                                     </div>
@@ -182,6 +178,10 @@ export default function pagUser() {
                                         <Label htmlFor="uf">UF</Label>
                                         <Input id="uf" placeholder="Informe a UF" defaultValue="" />
                                     </div>    
+                                    <div className="w-20">
+                                        <Label htmlFor="number">Nº</Label>
+                                        <Input id="number" placeholder="Número" defaultValue="" />
+                                    </div>
                                 </div>
                                 <Separator />
                                 <div className="flex justify-end mt-2">
