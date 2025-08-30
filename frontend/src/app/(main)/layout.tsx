@@ -2,6 +2,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Toaster } from "@/components/toaster";
 
 export default async function MainAppLayout({
   children,
@@ -26,6 +27,7 @@ export default async function MainAppLayout({
         </header>
         <main className="flex-1">{children}</main>
       </div>
+      <Toaster/>
     </SidebarProvider>
   );
 }
