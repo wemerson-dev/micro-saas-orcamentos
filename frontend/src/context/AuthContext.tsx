@@ -1,5 +1,6 @@
 'use client';
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useState, useEffect, ReactNode, useContext } from "react";
+import axios from "axios";
 
 interface AuthContextType {
   token: string | null;
@@ -16,8 +17,17 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem("token") || null);
-  const [userId, setUserId] = useState<string | null>(localStorage.getItem("userId") || null);
+  const [token, setToken] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // Novo estado de carregamento
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setToken(localStorage.getItem("token") || null);
+      setUserId(localStorage.getItem("userId") || null);
+    }
+    setIsLoading(false); // Define como falso após tentar carregar do localStorage
+  }, []);
 
   const login = (newToken: string, newUserId: string) => {
     localStorage.setItem("token", newToken);
@@ -34,6 +44,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserId(null);
     console.log("AuthContext: Logout realizado");
   };
+
+  if (isLoading) {
+    return null; // Não renderiza nada enquanto estiver carregando para evitar hidratação incorreta
+  }
 
   return (
     <AuthContext.Provider value={{ token, userId, login, logout }}>
