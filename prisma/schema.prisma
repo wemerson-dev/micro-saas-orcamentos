@@ -43,7 +43,8 @@ model Cliente {
   cidade      String
   email       String      @unique
   telefone    String?
-  cgc         String      @unique
+  cgc         String?     @unique
+  status      String @default("Ativo")
   orcamentos  Orcamento[]
   usuarioId   String
   usuario     Usuario @relation(fields: [usuarioId], references: [id])

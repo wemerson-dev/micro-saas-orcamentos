@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Cliente" ADD COLUMN     "status" TEXT NOT NULL DEFAULT 'Ativo',
+ALTER COLUMN "cgc" DROP NOT NULL;

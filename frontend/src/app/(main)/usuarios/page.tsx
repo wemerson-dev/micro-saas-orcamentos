@@ -308,7 +308,7 @@ export default function UserProfilePage() {
             setUploadProgress(20)
 
             // Atualizar dados do usuário
-            await axios.put(`${apiUrl}/usuario/atualizar/${userId}`, formData, {
+            await axios.put(`${apiUrl}/usuario/atualizar`, formData, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             

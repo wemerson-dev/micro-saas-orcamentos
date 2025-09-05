@@ -232,7 +232,7 @@ export default function ClientesPage() {
             }
 
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-            const response = await axios.get(`${apiUrl}/clientes`, {
+            const response = await axios.get(`${apiUrl}/cliente/listar`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
 
@@ -297,10 +297,22 @@ export default function ClientesPage() {
         setFormData(prev => ({ ...prev, [name]: value }))
         setHasUnsavedChanges(true)
         
-        if (touchedFields.has(name)) {
+        const erro = validateField(name, value)
+        setErrors(prev => ({ 
+            ...prev, 
+            [name]: erro || undefined
+        }))
+
+        if (!error && errors[name as keyof FormErrors]) {
+            const newErrors = { ...errors }
+            delete newErrors[name as keyof FormErrors]
+            setErrors(newErrors)
+        }
+        
+        /*if (touchedFields.has(name)) {const error = validateField(name, value)
             const error = validateField(name, value)
             setErrors(prev => ({ ...prev, [name]: error || undefined }))
-        }
+        }*/
     }
 
     const handleFieldBlur = (name: string) => {
@@ -348,7 +360,7 @@ export default function ClientesPage() {
 
             if (editingClient) {
                 // Editar cliente existente
-                await axios.put(`${apiUrl}/clientes/${editingClient.id}`, formData, {
+                await axios.put(`${apiUrl}/cliente/atualizar/${editingClient.id}`, formData, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 toast({
@@ -357,7 +369,7 @@ export default function ClientesPage() {
                 })
             } else {
                 // Criar novo cliente
-                await axios.post(`${apiUrl}/clientes`, formData, {
+                await axios.post(`${apiUrl}/cliente/criar`, formData, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 toast({
@@ -393,7 +405,7 @@ export default function ClientesPage() {
             const token = localStorage.getItem("token")
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
             
-            await axios.delete(`${apiUrl}/clientes/${clienteId}`, {
+            await axios.delete(`${apiUrl}/cliente/deletar/${clienteId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             

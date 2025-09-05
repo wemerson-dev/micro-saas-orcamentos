@@ -34,7 +34,7 @@ const clienteController = {
 
             const formatCgc = {
                 ...cliente,
-                cgc: cliente.cgc.toString(),
+                cgc: cliente.cgc?.toString() || '',
             };
             res.status(201).json(formatCgc);
         } catch (error) {
@@ -49,7 +49,7 @@ const clienteController = {
             const formatCgc = clientes.map(cliente => (
                 {
                     ...cliente,
-                    cgc: cliente.cgc.toString(),
+                    cgc: cliente.cgc?.toString() || '',
                 }
             ));
             res.status(201).json(formatCgc);
@@ -77,7 +77,7 @@ const clienteController = {
                 },});
                 const formatCgc = {
                     ...updateClient,
-                    cgc: updateClient.cgc.toString(),
+                    cgc: updateClient.cgc?.toString() || '',
                 };
             res.json(formatCgc)
         }
