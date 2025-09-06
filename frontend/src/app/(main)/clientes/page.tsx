@@ -294,10 +294,17 @@ export default function ClientesPage() {
 
     // Handler para mudanças nos inputs
     const handleInputChange = (name: string, value: string) => {
-        setFormData(prev => ({ ...prev, [name]: value }))
+        console.log('🔄 Input mudou:', { name, value, antes: formData[name as keyof Cliente] })
+        setFormData(prev => {
+            const newData = { ...prev, [name]: value }
+            console.log('📝 FormData atualizado:', newData)
+            return newData
+        })
         setHasUnsavedChanges(true)
         
         const erro = validateField(name, value)
+        console.log('✅ Validação:', { field: name, value, error })
+        
         setErrors(prev => ({ 
             ...prev, 
             [name]: erro || undefined
@@ -313,6 +320,21 @@ export default function ClientesPage() {
             const error = validateField(name, value)
             setErrors(prev => ({ ...prev, [name]: error || undefined }))
         }*/
+    }
+
+    const isFormValid = (): boolean => {
+        const requiredFields = ['nome', 'email', 'telefone', 'endereco', 'bairro', 'cidade', 'CEP', 'UF', 'numero']
+        
+        // ✅ Verificar se todos os campos obrigatórios estão preenchidos
+        const allFieldsFilled = requiredFields.every(field => {
+            const value = formData[field as keyof Cliente] as string || ''
+            return value.trim() !== ''
+        })
+        
+        // ✅ Verificar se não há erros
+        const noErrors = Object.keys(errors).length === 0
+        
+        return allFieldsFilled && noErrors
     }
 
     const handleFieldBlur = (name: string) => {
@@ -1148,7 +1170,7 @@ export default function ClientesPage() {
                                 
                                 <Button 
                                     onClick={handleSave}
-                                    disabled={saving || Object.keys(errors).length > 0}
+                                    disabled={saving || !isFormValid()}
                                 >
                                     {saving ? (
                                         <>

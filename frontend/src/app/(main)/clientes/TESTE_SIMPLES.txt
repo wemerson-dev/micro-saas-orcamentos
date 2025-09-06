@@ -1,0 +1,49 @@
+// ✅ TESTE: Substitua apenas estas linhas no seu código atual:
+
+// 1. Encontre a função handleInputChange e substitua por:
+const handleInputChange = (name: string, value: string) => {
+    console.log('🔄 Input:', name, '=', value)
+    setFormData(prev => {
+        const newData = { ...prev, [name]: value }
+        console.log('📝 New formData:', newData)
+        return newData
+    })
+    setHasUnsavedChanges(true)
+}
+
+// 2. Encontre a função isFormValid e substitua por:
+const isFormValid = (): boolean => {
+    if (!formData) return false
+    
+    const nome = formData.nome?.trim() || ''
+    const email = formData.email?.trim() || ''
+    const telefone = formData.telefone?.trim() || ''
+    const endereco = formData.endereco?.trim() || ''
+    const cidade = formData.cidade?.trim() || ''
+    
+    const isValid = nome.length > 0 && 
+                   email.length > 0 && 
+                   telefone.length > 0 && 
+                   endereco.length > 0 && 
+                   cidade.length > 0
+    
+    console.log('✅ Form valid:', isValid, { nome, email, telefone, endereco, cidade })
+    return isValid
+}
+
+// 3. No botão, use apenas isto:
+disabled={saving}
+
+// 4. Adicione esta linha logo após o DialogHeader para debug:
+<div className="p-3 bg-yellow-100 rounded mb-4">
+    <strong>DEBUG:</strong> Form Valid: {isFormValid() ? '✅' : '❌'} | 
+    Saving: {saving ? '⏳' : '✅'} | 
+    Nome: "{formData.nome}" | 
+    Email: "{formData.email}"
+</div>
+
+// INSTRUÇÕES:
+// 1. Faça essas 4 alterações no seu arquivo atual
+// 2. Teste preenchendo pelo menos nome e email
+// 3. Veja se o debug box mostra "Form Valid: ✅"
+// 4. O botão deve ficar habilitado (não cinza)
