@@ -98,13 +98,15 @@ interface Cliente {
     bairro: string
     numero: string
     cidade: string
-    CEP: string
-    UF: string
+    cgc?: string
+    usuarioId: string
+    CEP?: string
+    UF?: string
     observacoes?: string
     status: 'ativo' | 'inativo' | 'bloqueado'
     dataCadastro: string
-    ultimoContato?: string
-    totalOrcamentos?: number
+    //ultimoContato?: string
+    //totalOrcamentos?: number
 }
 
 interface FormErrors {
@@ -117,6 +119,8 @@ interface FormErrors {
     CEP?: string
     UF?: string
     numero?: string
+    cgc?: string
+    observacoes?: string
 }
 
 interface Filters {
@@ -337,7 +341,7 @@ export default function ClientesPage() {
         return allFieldsFilled && noErrors
     }
 
-    const handleFieldBlur = (name: string) => {
+    const handleFieldBlur = (name: string) => { 
         setTouchedFields(prev => new Set(prev).add(name))
         if (formData[name as keyof Cliente]) {
             const error = validateField(name, formData[name as keyof Cliente] as string)
@@ -348,7 +352,7 @@ export default function ClientesPage() {
     // Validar formulário
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {}
-        const fields = ['nome', 'email', 'telefone', 'endereco', 'bairro', 'cidade', 'CEP', 'UF', 'numero']
+        const fields = ['nome', 'email', 'telefone', 'endereco', 'bairro', 'cidade', 'cgc','CEP', 'UF', 'numero','observacoes']
         
         fields.forEach(field => {
             const value = formData[field as keyof Cliente] as string || ''
@@ -749,7 +753,7 @@ export default function ClientesPage() {
                                                     <div>
                                                         <p className="font-medium">{cliente.nome}</p>
                                                         <p className="text-sm text-muted-foreground">
-                                                            {cliente.totalOrcamentos || 0} orçamentos
+                                                            {/*{cliente.totalOrcamentos || 0} orçamentos*/}
                                                         </p>
                                                     </div>
                                                 </TableCell>
@@ -966,6 +970,25 @@ export default function ClientesPage() {
                                         </p>
                                     )}
                                 </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="cgc">CPF/CNPJ *</Label>
+                                    <Input
+                                        id="cgc"
+                                        value={formData.cgc || ""}
+                                        onChange={(e) => handleInputChange('cgc', e.target.value)}
+                                        onBlur={() => handleFieldBlur('cgc')}
+                                        className={cn(
+                                            errors.cgc && "border-destructive"
+                                        )}
+                                        placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                                    />
+                                    {errors.cgc && (
+                                        <p className="text-xs text-destructive flex items-center gap-1">
+                                            <AlertCircle className="h-3 w-3" />
+                                            {errors.cgc}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -1170,7 +1193,7 @@ export default function ClientesPage() {
                                 
                                 <Button 
                                     onClick={handleSave}
-                                    disabled={saving || !isFormValid()}
+                                    disabled={saving} //|| !isFormValid()}
                                 >
                                     {saving ? (
                                         <>

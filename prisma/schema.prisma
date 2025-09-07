@@ -35,19 +35,23 @@ model Usuario {
 }
 
 model Cliente {
-  id          String      @id @default(uuid())
-  nome        String
-  endereco    String
-  bairro      String
-  numero      Int
-  cidade      String
-  email       String      @unique
-  telefone    String?
-  cgc         String?     @unique
-  status      String @default("ativo")
-  orcamentos  Orcamento[]
-  usuarioId   String
-  usuario     Usuario @relation(fields: [usuarioId], references: [id])
+  id              String      @id @default(uuid())
+  nome            String
+  email           String      @unique
+  telefone        String
+  endereco        String
+  bairro          String
+  numero          String
+  cidade          String
+  cgc             String?     @unique
+  CEP             String?
+  UF              String?
+  observacoes     String?
+  status          String      @default("ativo")
+  dataCadastro    DateTime    @default(now())
+  usuarioId       String
+  usuario         Usuario     @relation(fields: [usuarioId], references: [id])
+  Orcamento       Orcamento[]
 }
 
 model Orcamento {
