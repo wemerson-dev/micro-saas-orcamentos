@@ -116,12 +116,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       icon: FileStack,
       items: [
         {
-          title: "Novo Cliente",
+          title: "Cadastro de Clientes",
           url: "http://localhost:3000/clientes",
-        },
-        {
-          title: "Dashboard Clientes",
-          url: "#",
         },
       ],
     },
@@ -131,16 +127,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       icon: Folders,
       items: [
         {
-          title: "Novo Orçamento",
+          title: "Cadastro de Orçamentos",
           url: "http://localhost:3000/orcamentos",
-        },
-        {
-          title: "Hirtórico",
-          url: "#",
         },
       ],
     },
-    {
+    /*{
       title: "Settings",
       url: "#",
       icon: Settings2,
@@ -162,7 +154,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           url: "#",
         },
       ],
-    },
+    },*/
   ],
   projects: [
     {
@@ -170,16 +162,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "http://localhost:3000/dashboard",
       icon: ChartNoAxesCombined,
     },
-    {
+    /*{
       name: "Sales & Marketing",
       url: "#",
       icon: PieChart,
-    },
-    {
+    },*/
+    /*{
       name: "Travel",
       url: "#",
       icon: Map,
-    },
+    },*/
   ],
   }
 

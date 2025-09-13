@@ -905,9 +905,9 @@ export default function OrcamentosPage() {
                                                     <TableRow key={orcamento.id}>
                                                         <TableCell>
                                                             <div className="font-medium">#{orcamento.numOrc}</div>
-                                                            <div className="text-sm text-muted-foreground">
+                                                           {/* <div className="text-sm text-muted-foreground">
                                                                 ID: {orcamento.id.slice(0, 8)}...
-                                                            </div>
+                                                            </div> */}
                                                         </TableCell>
                                                         
                                                         <TableCell>
