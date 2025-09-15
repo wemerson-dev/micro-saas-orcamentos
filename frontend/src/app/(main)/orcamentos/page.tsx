@@ -126,7 +126,7 @@ interface Orcamento {
     numOrc: number
     dataEmissao: string
     dataVencimento?: string
-    status: 'rascunho' | 'enviado' | 'aprovado' | 'rejeitado' | 'cancelado'
+    status: 'pendente' | 'enviado' | 'aprovado' | 'rejeitado' | 'cancelado'
     valorTotal: number
     cliente: Cliente
     itens: ItemOrcamento[]
@@ -161,6 +161,7 @@ export default function OrcamentosPage() {
     const [saving, setSaving] = useState<boolean>(false)
     const [error, setError] = useState<string>("")
     const [isClient, setIsClient] = useState(false); // Novo estado para controle de hidratação
+    const [atuStatus, setAtuStatus] = useState<Orcamento | null>(null)
     
     // Estados do modal/formulário
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
@@ -457,7 +458,7 @@ export default function OrcamentosPage() {
             const token = localStorage.getItem("token")
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
             
-            await axios.patch(`${apiUrl}/Orcamento/${orcamentoId}/status`, {
+            await axios.put(`${apiUrl}/Orcamento/atualizar-status/${orcamentoId}`, {
                 status: newStatus
             }, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -472,6 +473,7 @@ export default function OrcamentosPage() {
             
         } catch (error: any) {
             const errorMessage = error.response?.data?.erro || "Erro ao atualizar status"
+            console.log(orcamentoId)
             toast({
                 title: "Erro",
                 description: errorMessage,
@@ -550,7 +552,7 @@ export default function OrcamentosPage() {
         const statusConfig = {
             rascunho: { 
                 variant: "secondary" as const, 
-                label: "Rascunho",
+                label: "Pendente",
                 icon: Edit,
                 className: ""
             },

@@ -455,7 +455,7 @@ export default function DashboardPage() {
                     <Separator orientation="vertical" className="mr-2 h-4" />
                     <Skeleton className="h-4 w-48" />
                 </header>
-                <div className="p-4 md:p-6">
+                <div className="p-6">  {/*"p-4 md:p-6"*/}
                     <div className="space-y-6">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <Skeleton className="h-8 w-64" />
@@ -529,7 +529,7 @@ export default function DashboardPage() {
                 </div>
             </header>
 
-            <div className="p-4 md:p-6">
+            <div className="p-6"> {/*"p-4 md:p-6">*/}
                 {/* Cabeçalho */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                     <div>
