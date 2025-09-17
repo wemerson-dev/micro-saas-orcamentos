@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Orçamento {{numOrc}}</title>
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      margin: 40px;
+      color: #333;
+    }
+
+    /* Cabeçalho geral */
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #444;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      max-width: 150px;
+      max-height: 80px;
+      object-fit: contain;
+    }
+
+    .company-info {
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-right: 80px;
+    }
+    .company-info strong {
+      font-size: 14px;
+    }
+    .cData {
+      text-align: right;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+
+    /* Título do documento */
+    .doc-title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 15px 0 5px;
+    }
+    .doc-date {
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Dados do cliente */
+    .cliente-info {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 20px 0;
+      background-color: #f9f9f9;
+    }
+    .cliente-info strong {
+      display: inline-block;
+      width: 80px;
+    }
+
+    /* Tabela de itens */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background-color: #efefef;
+      font-weight: bold;
+      text-align: left;
+    }
+    td.valor {
+      text-align: right;
+    }
+
+    /* Total geral */
+    .total {
+      text-align: right;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Rodapé */
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 10px;
+      color: #777;
+      border-top: 1px solid #ccc;
+      padding-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <div class="header-container">
+    <div class="logo-container">
+      {{#if logoPath}}
+        <img src="{{logoPath}}" class="logo" alt="Logo da empresa" />
+      {{/if}}
+    </div>
+    <div class="company-info">
+      <strong>{{usuario.nome}}</strong><br>
+      Endereço: {{usuario.endereco}},{{usuario.numero}} - {{usuario.bairro}}<br>
+      {{usuario.cidade}} - {{usuario.UF}} - CEP: {{usuario.CEP}}<br>
+      Tel: {{usuario.telefone}}<br>
+      E-mail: {{usuario.email}}
+    </div>
+    <div>
+
+    </div>
+  </div>
+
+  <!-- Título -->
+  <div class="doc-title">ORÇAMENTO Nº {{numOrc}}</div>
+  <div class="doc-date">Data: {{dataEmissao}}</div>
+
+  <!-- Dados do cliente -->
+  <div class="cliente-info">
+    <strong>Cliente:</strong> {{cliente.nome}}<br>
+    <strong>Endereço:</strong> {{cliente.endereco}}, {{cliente.cidade}}<br>
+    <strong>Telefone:</strong> {{cliente.telefone}}<br>
+    <strong>E-mail:</strong> {{cliente.email}}
+  </div>
+
+  <!-- Itens -->
+  <h3>Itens do Orçamento</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Qtd.</th>
+        <th>Descrição</th>
+        <th>Valor Unitário (R$)</th>
+        <th>Subtotal (R$)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each itens}}
+        <tr>
+          <td>{{quantidade}}</td>
+          <td>{{descricao}}</td>
+          <td class="valor">{{precoUnitario}}</td>
+          <td class="valor">{{subtotal}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <!-- Total -->
+  <div class="total">Total Geral: R$ {{totalGeral}}</div>
+
+  <!-- Rodapé -->
+  <footer>
+    Este orçamento é válido por 7 dias úteis.<br>
+    Obrigado pela preferência!
+  </footer>
+
+</body>
+</html>

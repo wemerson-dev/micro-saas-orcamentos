@@ -32,12 +32,25 @@ interface OrcamentoData {
     telefone: string
     UF: string
   }
+  usuarioIniciais?: string
 }
 
 export async function gerarPDF(orçamento: OrcamentoData): Promise<Buffer> {
   const templatePath = path.resolve(__dirname, '../templates/orcamento-template.html')
   const templateHtml = await fs.readFile(templatePath, 'utf-8')
   const template = handlebars.compile(templateHtml)
+
+  // Adiciona as iniciais do nome do usuário ao objeto orçamento
+  const nomeCompleto = orçamento.usuario.nome
+  const partesDoNome = nomeCompleto.split(' ')
+  let iniciais = ''
+  if (partesDoNome.length > 0) {
+    iniciais += partesDoNome[0].charAt(0).toUpperCase()
+  }
+  if (partesDoNome.length > 1) {
+    iniciais += partesDoNome[1].charAt(0).toUpperCase()
+  }
+  orçamento.usuarioIniciais = iniciais
 
   const htmlFinal = template(orçamento)
 

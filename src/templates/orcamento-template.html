@@ -1,174 +1,663 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Orçamento {{numOrc}}</title>
-  <style>
-    body {
-      font-family: Helvetica, Arial, sans-serif;
-      font-size: 12px;
-      margin: 40px;
-      color: #333;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento {{numOrc}} - {{usuario.nome}}</title>
+    <style>
+        /* Reset e Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Cabeçalho geral */
-    .header-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid #444;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-    .logo {
-      max-width: 150px;
-      max-height: 80px;
-      object-fit: contain;
-    }
+        /* Layout Principal */
+        .document {
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
 
-    .company-info {
-      text-align: center;
-      font-size: 12px;
-      line-height: 1.5;
-      margin-right: 80px;
-    }
-    .company-info strong {
-      font-size: 14px;
-    }
-    .cData {
-      text-align: right;
-      font-size: 12px;
-      margin-left: 10px;
-    }
+        /* Header Premium */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* Título do documento */
-    .doc-title {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      margin: 15px 0 5px;
-    }
-    .doc-date {
-      text-align: center;
-      font-size: 12px;
-      color: #666;
-    }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
 
-    /* Dados do cliente */
-    .cliente-info {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin: 20px 0;
-      background-color: #f9f9f9;
-    }
-    .cliente-info strong {
-      display: inline-block;
-      width: 80px;
-    }
+        .header-content {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 30px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
 
-    /* Tabela de itens */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-    }
-    th {
-      background-color: #efefef;
-      font-weight: bold;
-      text-align: left;
-    }
-    td.valor {
-      text-align: right;
-    }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
 
-    /* Total geral */
-    .total {
-      text-align: right;
-      margin-top: 10px;
-      font-size: 14px;
-      font-weight: bold;
-    }
+        .logo {
+            max-width: 120px;
+            max-height: 80px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px;
+        }
 
-    /* Rodapé */
-    footer {
-      margin-top: 30px;
-      text-align: center;
-      font-size: 10px;
-      color: #777;
-      border-top: 1px solid #ccc;
-      padding-top: 5px;
-    }
-  </style>
+        .company-info {
+            text-align: center;
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .company-details {
+            font-size: 13px;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        .document-info {
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .doc-number {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .doc-date {
+            opacity: 0.9;
+        }
+
+        /* Título do Documento */
+        .document-title {
+            background: #f8fafc;
+            padding: 25px 30px;
+            border-bottom: 3px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .title-main {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .title-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Container Principal */
+        .main-content {
+            padding: 30px;
+        }
+
+        /* Cliente Info - Card Style */
+        .cliente-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            width: 18px;
+            height: 18px;
+            background: #667eea;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-icon::before {
+            content: '👤';
+            font-size: 10px;
+        }
+
+        .cliente-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .cliente-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .field-label {
+            font-weight: 600;
+            color: #374151;
+            min-width: 80px;
+            font-size: 13px;
+        }
+
+        .field-value {
+            color: #1f2937;
+            flex: 1;
+        }
+
+        /* Tabela Premium */
+        .items-section {
+            margin-bottom: 30px;
+        }
+
+        .items-section .section-icon::before {
+            content: '📋';
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .items-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 12px;
+            font-weight: 600;
+            text-align: left;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .items-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .items-table th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        .items-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+            transition: background-color 0.2s;
+        }
+
+        .items-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .items-table tr:last-child td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+
+        .items-table tr:last-child td:last-child {
+            border-bottom-right-radius: 8px;
+        }
+
+        .qty-col {
+            width: 80px;
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .desc-col {
+            min-width: 200px;
+        }
+
+        .price-col, .total-col {
+            text-align: right;
+            font-weight: 600;
+            font-family: 'Monaco', 'Consolas', monospace;
+            width: 130px;
+        }
+
+        /* Resumo Financeiro */
+        .financial-summary {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 5px;
+            margin-top: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary-grid {
+            display: grid;
+            gap: 12px;
+            max-width: 400px;
+            margin-left: auto;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .summary-label {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: #1f2937;
+        }
+
+        .summary-total {
+            border-top: 2px solid #e5e7eb;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .summary-total .summary-label {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .summary-total .summary-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #059669;
+        }
+
+        /* Termos e Condições */
+        .terms-section {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .terms-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terms-title::before {
+            content: '📋';
+            font-size: 16px;
+        }
+
+        .terms-list {
+            list-style: none;
+        }
+
+        .terms-list li {
+            padding: 6px 0;
+            color: #4b5563;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .terms-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 5px;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .footer-message {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .footer-contact {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Utilitários */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-bold { font-weight: 700; }
+        .text-green { color: #059669; }
+        .text-blue { color: #667eea; }
+
+        /* Responsivo para Impressão */
+        @media print {
+            body {
+                margin: 0;
+                padding: 15px;
+                font-size: 12px;
+            }
+            
+            .document {
+                box-shadow: none;
+            }
+            
+            .header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .items-table th {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .footer {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .document-info {
+                text-align: center;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .cliente-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .items-table {
+                font-size: 12px;
+            }
+            
+            .summary-grid {
+                max-width: none;
+            }
+        }
+
+        /* Animações Sutis */
+        .document {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Status Badge (se aplicável) */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-pending {
+            background: #fef3cd;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-draft {
+            background: #e5e7eb;
+            color: #374151;
+        }
+    </style>
 </head>
 <body>
+    <div class="document">
+        <!-- Header Premium -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-container">
+                    {{#if logoPath}}
+                        <img src="{{logoPath}}" class="logo" alt="Logo da empresa" />
+                    {{else}}
+                        <div class="logo" style="display: flex; align-items: center; justify-content: center; background: white; color: #667eea; font-weight: bold; font-size: 18px;">
+                            {{usuarioIniciais}}
+                        </div>
+                    {{/if}}
+                </div>
+                
+                <div class="company-info">
+                    <div class="company-name">{{usuario.nome}}</div>
+                    <div class="company-details">
+                        {{usuario.endereco}}, {{usuario.numero}} - {{usuario.bairro}}<br>
+                        {{usuario.cidade}} - {{usuario.UF}} - CEP: {{usuario.CEP}}<br>
+                        📞 {{usuario.telefone}} | ✉️ {{usuario.email}}
+                    </div>
+                </div>
+                
+                <div class="document-info">
+                    <div class="doc-number">{{numOrc}}</div>
+                    <div class="doc-date">{{dataEmissao}}</div>
+                    {{#if status}}
+                        <div class="status-badge status-{{status}}" style="margin-top: 8px;">
+                            {{status}}
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
 
-  <!-- Cabeçalho -->
-  <div class="header-container">
-    <div class="logo-container">
-      {{#if logoPath}}
-        <img src="{{logoPath}}" class="logo" alt="Logo da empresa" />
-      {{/if}}
+        <!-- Título do Documento -->
+        <!--<div class="document-title">
+            <div class="title-main">PROPOSTA COMERCIAL</div>
+            <div class="title-subtitle">Orçamento Detalhado</div>
+        </div>-->
+
+        <!-- Conteúdo Principal -->
+        <div class="main-content">
+            <!-- Informações do Cliente -->
+            <div class="cliente-section">
+                <div class="section-title">
+                    <span class="section-icon"></span>
+                    Dados do Cliente
+                </div>
+                <div class="cliente-card">
+                    <div class="cliente-field">
+                        <span class="field-label">Cliente:</span>
+                        <span class="field-value font-bold">{{cliente.nome}}</span>
+                    </div>
+                    <div class="cliente-field">
+                        <span class="field-label">Telefone:</span>
+                        <span class="field-value">{{cliente.telefone}}</span>
+                    </div>
+                    <div class="cliente-field">
+                        <span class="field-label">Endereço:</span>
+                        <span class="field-value">{{cliente.endereco}}, {{cliente.cidade}}</span>
+                    </div>
+                    <div class="cliente-field">
+                        <span class="field-label">E-mail:</span>
+                        <span class="field-value">{{cliente.email}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Itens do Orçamento -->
+            <div class="items-section">
+                <div class="section-title">
+                    <span class="section-icon"></span>
+                    Itens e Serviços
+                </div>
+                
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th class="qty-col">Qtd.</th>
+                            <th class="desc-col">Descrição</th>
+                            <th class="price-col">Valor Unit.</th>
+                            <th class="total-col">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each itens}}
+                            <tr>
+                                <td class="qty-col">{{quantidade}}</td>
+                                <td class="desc-col">{{descricao}}</td>
+                                <td class="price-col">R$ {{precoUnitario}}</td>
+                                <td class="total-col text-green">R$ {{subtotal}}</td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Resumo Financeiro -->
+            <div class="financial-summary">
+                <div class="summary-grid">
+                    {{#if desconto}}
+                    <div class="summary-row">
+                        <span class="summary-label">Subtotal:</span>
+                        <span class="summary-value">R$ {{subtotalSemDesconto}}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Desconto ({{descontoPercentual}}%):</span>
+                        <span class="summary-value text-blue">- R$ {{desconto}}</span>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if impostos}}
+                    <div class="summary-row">
+                        <span class="summary-label">Impostos:</span>
+                        <span class="summary-value">R$ {{impostos}}</span>
+                    </div>
+                    {{/if}}
+                    
+                    <div class="summary-row summary-total">
+                        <span class="summary-label">Total Geral:</span>
+                        <span class="summary-value">R$ {{totalGeral}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Termos e Condições -->
+            <div class="terms-section">
+                <div class="terms-title">Termos e Condições</div>
+                <ul class="terms-list">
+                    <li>Este orçamento tem validade de <strong>15 dias</strong> a partir da data de emissão</li>
+                    <!--<li>Os valores incluem todos os materiais e serviços especificados</li>-->  
+                    <li>Prazo de execução: <strong>{{#if prazoExecucao}}{{prazoExecucao}}{{else}}A combinar{{/if}}</strong></li>
+                    <li>Forma de pagamento: <strong>{{#if formaPagamento}}{{formaPagamento}}{{else}}À vista ou parcelado{{/if}}</strong></li>
+                    <!--<li>Garantia: <strong>{{#if garantia}}{{garantia}}{{else}}12 meses{{/if}}</strong> para serviços executados</li>-->
+                    <!--<li>Alterações no escopo podem impactar o valor final</li>-->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-message">Obrigado pela oportunidade de apresentar nossa proposta!</div>
+            <div class="footer-contact">
+                Entre em contato conosco para esclarecimentos ou aprovação deste orçamento<br>
+                📞 {{usuario.telefone}} | ✉️ {{usuario.email}}
+            </div>
+        </div>
     </div>
-    <div class="company-info">
-      <strong>{{usuario.nome}}</strong><br>
-      Endereço: {{usuario.endereco}},{{usuario.numero}} - {{usuario.bairro}}<br>
-      {{usuario.cidade}} - {{usuario.UF}} - CEP: {{usuario.CEP}}<br>
-      Tel: {{usuario.telefone}}<br>
-      E-mail: {{usuario.email}}
-    </div>
-    <div>
-
-    </div>
-  </div>
-
-  <!-- Título -->
-  <div class="doc-title">ORÇAMENTO Nº {{numOrc}}</div>
-  <div class="doc-date">Data: {{dataEmissao}}</div>
-
-  <!-- Dados do cliente -->
-  <div class="cliente-info">
-    <strong>Cliente:</strong> {{cliente.nome}}<br>
-    <strong>Endereço:</strong> {{cliente.endereco}}, {{cliente.cidade}}<br>
-    <strong>Telefone:</strong> {{cliente.telefone}}<br>
-    <strong>E-mail:</strong> {{cliente.email}}
-  </div>
-
-  <!-- Itens -->
-  <h3>Itens do Orçamento</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Qtd.</th>
-        <th>Descrição</th>
-        <th>Valor Unitário (R$)</th>
-        <th>Subtotal (R$)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each itens}}
-        <tr>
-          <td>{{quantidade}}</td>
-          <td>{{descricao}}</td>
-          <td class="valor">{{precoUnitario}}</td>
-          <td class="valor">{{subtotal}}</td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
-
-  <!-- Total -->
-  <div class="total">Total Geral: R$ {{totalGeral}}</div>
-
-  <!-- Rodapé -->
-  <footer>
-    Este orçamento é válido por 7 dias úteis.<br>
-    Obrigado pela preferência!
-  </footer>
-
 </body>
 </html>
