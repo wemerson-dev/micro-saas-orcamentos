@@ -231,7 +231,7 @@ export default function UserProfilePage() {
             }
 
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-            const response = await axios.get(`${apiUrl}/usuario/buscar/${userId}`, {
+            const response = await axios.get(`${apiUrl}/usuario/perfil`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
 

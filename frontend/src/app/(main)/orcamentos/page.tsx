@@ -102,6 +102,7 @@ import {
 import { useEffect, useState, useCallback } from "react"
 import axios from "axios"
 import { cn } from "@/lib/utils"
+import { headers } from "next/headers"
 
 interface Cliente {
     id: string
@@ -458,7 +459,7 @@ export default function OrcamentosPage() {
             const token = localStorage.getItem("token")
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
             
-            await axios.put(`${apiUrl}/Orcamento/atualizar-status/${orcamentoId}`, {
+            await axios.put(`${apiUrl}/Orcamento/status/${orcamentoId}`, {
                 status: newStatus
             }, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -485,8 +486,68 @@ export default function OrcamentosPage() {
     // Download PDF
     const handleDownloadPDF = async (orcamentoId: string, numOrc: number) => {
         try {
+            const token = localStorage.getItem("token")
+            if (!token) {
+                toast({
+                    title: "Erro de autenticação",
+                    description: "Token não encontrado. Faça login novamente.",
+                    variant: "destructive"
+                })
+                return
+            }
+    
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-            window.open(`${apiUrl}/Orcamento/${orcamentoId}/pdf`, "_blank")
+            
+            // Usar fetch ao invés de window.open para incluir o token
+            const response = await fetch(`${apiUrl}/Orcamento/pdf/${orcamentoId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+    
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(errorData.erro || 'Erro ao gerar PDF')
+            }
+    
+            // Converter a resposta em blob
+            const blob = await response.blob()
+            
+            // Criar URL do blob e fazer download
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = `orcamento_${numOrc}.pdf`
+            link.style.display = 'none'
+            
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            
+            // Limpar URL do blob
+            window.URL.revokeObjectURL(url)
+            
+            toast({
+                title: "PDF gerado!",
+                description: `Orçamento #${numOrc} baixado com sucesso`,
+            })
+            
+        } catch (error: any) {
+            console.error('Erro ao baixar PDF:', error)
+            toast({
+                title: "Erro",
+                description: error.message || "Erro ao gerar PDF",
+                variant: "destructive"
+            })
+        }
+    }
+    /*
+    const handleDownloadPDF = async (orcamentoId: string, numOrc: number) => {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+            window.open(`${apiUrl}/Orcamento/pdf/${orcamentoId}`, "_blank")
             
             toast({
                 title: "PDF gerado!",
@@ -500,7 +561,7 @@ export default function OrcamentosPage() {
             })
         }
     }
-
+    */
     // Duplicar orçamento
     const handleDuplicate = (orcamento: Orcamento) => {
         setEditingOrcamento(null)
