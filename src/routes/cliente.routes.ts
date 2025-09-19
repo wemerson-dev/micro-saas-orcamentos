@@ -7,6 +7,7 @@ const router = Router();
 
 router.post("/criar", verificarToken, clienteController.criar);
 router.get("/listar", verificarToken, clienteController.listar);
+router.get("/buscar/:id", verificarToken, clienteController.buscarPorId);
 router.put("/atualizar/:id", verificarToken, clienteController.cUpdate);
 router.delete("/deletar/:id", verificarToken, clienteController.cDelete);
 

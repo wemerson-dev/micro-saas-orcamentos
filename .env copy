@@ -1,0 +1,31 @@
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+# The following `prisma+postgres` URL is similar to the URL produced by running a local Prisma Postgres 
+# server with the `prisma dev` CLI command, when not choosing any non-default ports or settings. The API key, unlike the 
+# one found in a remote Prisma Postgres URL, does not contain any sensitive information.
+
+# Conecte-se ao Supabase por meio de pool de conexão
+#DATABASE_URL="postgresql://postgres.sdixfosqdzgpzzeiunkq:[1q2w3e4r5t6y7u8i9o0p]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres"
+DATABASE_URL="postgresql://postgres:1234@localhost:5432/micro_saas_orcamentos"
+# Conexão direta com o banco de dados. Usado para migrações
+DIRECT_URL="postgresql://postgres:1234@localhost:5432/micro_saas_orcamentos"
+
+
+# Connect to Supabase via connection pooling
+###DATABASE_URL="postgresql://postgres.oavllayovvcieweicxui:[1q2w3e4r5t6y7u8i9o0p]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+
+# Direct connection to the database. Used for migrations
+###DIRECT_URL="postgresql://postgres.oavllayovvcieweicxui:[1q2w3e4r5t6y7u8i9o0p]@aws-0-sa-east-1.pooler.supabase.com:5432/postgres"
+
+###NEXT_PUBLIC_SUPABASE_URL=https://oavllayovvcieweicxui.supabase.co
+###NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdmxsYXlvdnZjaWV3ZWljeHVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxODcxNjAsImV4cCI6MjA2NTc2MzE2MH0.fxYto1cEpd4TCL-pskLfcs3-M1-N20y_gMjJ5QJ2aCg
+
+JWT_SECRET=sua_chave_secreta_segura
+
+AUTH_SECRET=your-secret-key
+
+SUPABASE_ACCESS_TOKEN="sbp_352fce3a6655649d226db3722ea2149929af0ca7"
