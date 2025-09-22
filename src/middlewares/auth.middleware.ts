@@ -6,7 +6,6 @@
 // =============================================================================
 
 import { Request, Response, NextFunction } from "express";
-import { console } from "inspector";
 import jwt from "jsonwebtoken";
 
 export interface AuthenticatedRequest extends Request {
@@ -41,46 +40,70 @@ export const verificarToken = async (
     }
 
     const token = authHeader.split(" ")[1];
-    console.log(`token gerado: ${token}`)
+    console.log(`🔍 Token recebido (primeiros 50 chars): ${token.substring(0, 50)}...`);
 
-    if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET não configurado!");
-      res.status(500).json({ 
-        erro: "Configuração do servidor incorreta.",
-        code: "SERVER_CONFIG_ERROR"
-      });
-      return;
+    // Tentar decodificar como token do Supabase primeiro
+    try {
+      // Tokens do Supabase são JWTs mas com estrutura diferente
+      const decoded = JSON.parse(atob(token.split('.')[1])) as any;
+      console.log(`🔍 Token decodificado:`, decoded);
+      
+      // Se tem 'sub', é um token do Supabase
+      if (decoded.sub) {
+        req.usuarioId = decoded.sub;
+        req.usuario = {
+          id: decoded.sub,
+          nome: decoded.user_metadata?.name || decoded.name || '',
+          email: decoded.email || ''
+        };
+        console.log(`🔐 Usuário autenticado via Supabase: ${decoded.sub}`);
+        next();
+        return;
+      }
+      
+      // Se tem 'id', é um token do sistema antigo
+      if (decoded.id) {
+        req.usuarioId = decoded.id;
+        req.usuario = {
+          id: decoded.id,
+          nome: decoded.nome || '',
+          email: decoded.email || ''
+        };
+        console.log(`🔐 Usuário autenticado via sistema antigo: ${decoded.id}`);
+        next();
+        return;
+      }
+      
+      throw new Error('Token sem identificador válido');
+      
+    } catch (decodeError) {
+      console.log(`⚠️ Falha ao decodificar token como Supabase, tentando JWT_SECRET...`);
+      
+      // Fallback: tentar com JWT_SECRET
+      if (!process.env.JWT_SECRET) {
+        console.error("JWT_SECRET não configurado!");
+        res.status(500).json({ 
+          erro: "Configuração do servidor incorreta.",
+          code: "SERVER_CONFIG_ERROR"
+        });
+        return;
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
+      
+      req.usuarioId = decoded.id || decoded.sub;
+      req.usuario = {
+        id: decoded.id || decoded.sub,
+        nome: decoded.nome || decoded.name || '',
+        email: decoded.email || ''
+      };
+
+      console.log(`🔐 Usuário autenticado via JWT_SECRET: ${req.usuarioId}`);
+      next();
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
-    
-    // ← VALIDAR SE USUÁRIO AINDA EXISTE NO BANCO (OPCIONAL)
-    // const usuario = await prisma.usuario.findUnique({
-    //   where: { id: decoded.id },
-    //   select: { id: true, nome: true, email: true }
-    // });
-    
-    // if (!usuario) {
-    //   res.status(401).json({ 
-    //     erro: "Usuário não encontrado.",
-    //     code: "USER_NOT_FOUND"
-    //   });
-    //   return;
-    // }
-
-    // Adicionar informações do usuário à requisição
-    req.usuarioId = decoded.sub; // Usar 'sub' que é o ID do usuário do Supabase
-    req.usuario = {
-      id: decoded.sub, // Usar 'sub' para o ID
-      nome: decoded.name || '', // Usar 'name' do user_metadata
-      email: decoded.email || ''
-    };
-
-    console.log(`🔐 Usuário autenticado: ${decoded.sub}`);
-    next();
     
   } catch (err: any) {
-    console.error("Erro na verificação do token:", err);
+    console.error("❌ Erro na verificação do token:", err.message);
     
     if (err.name === 'JsonWebTokenError') {
       res.status(401).json({ 
@@ -93,9 +116,9 @@ export const verificarToken = async (
         code: "EXPIRED_TOKEN"
       });
     } else {
-      res.status(500).json({ 
-        erro: "Erro interno do servidor.",
-        code: "SERVER_ERROR"
+      res.status(401).json({ 
+        erro: "Falha na autenticação.",
+        code: "AUTH_FAILED"
       });
     }
   }

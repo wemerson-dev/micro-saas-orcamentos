@@ -66,17 +66,18 @@ export default function LoginPage() {
     confirmPassword: false
   });
 
-  // Redirecionar se já estiver logado (removido, o redirecionamento será feito no handleLogin)
-  /*useEffect(() => {
+  // Redirecionar se já estiver logado
+  useEffect(() => {
     if (user && !loading) {
-      // Usar setTimeout para evitar conflitos de renderização
+      // Usar router.replace ao invés de push para não manter histórico
       const timer = setTimeout(() => {
-        router.push('/dashboard');
-      }, 100);
+        console.log('Usuário logado detectado, redirecionando para dashboard...');
+        router.replace('/dashboard');
+      }, 500); // Aumentar delay para garantir que AuthContext tenha tempo de sincronizar
       
       return () => clearTimeout(timer);
     }
-  }, [user, loading, router]);*/
+  }, [user, loading, router]);
 
   // Validar email
   const validateEmail = (email: string) => {
@@ -129,12 +130,8 @@ export default function LoginPage() {
           setError(error.message || 'Erro ao fazer login. Tente novamente.');
         }
       } else {
-        // Login bem-sucedido - redirecionar imediatamente para o dashboard
-        console.log('Login bem-sucedido. Redirecionando para o dashboard...');
-        // Usar setTimeout para dar tempo ao Supabase de definir os cookies antes do redirecionamento
-        setTimeout(() => {
-          router.replace('/dashboard');
-        }, 100); // Pequena pausa para garantir que os cookies sejam definidos
+        // Login bem-sucedido - o redirecionamento será feito pelo useEffect
+        console.log('Login successful, awaiting redirect...');
       }
     } catch (err) {
       setError('Erro inesperado. Tente novamente.');

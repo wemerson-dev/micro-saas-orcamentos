@@ -1,4 +1,7 @@
-// middleware.ts (na raiz do projeto frontend)
+// MIDDLEWARE DESATIVADO - Usando apenas ClientLayout para proteção de rotas
+// Este middleware estava causando conflitos com tokens do Supabase
+
+/*
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
@@ -43,4 +46,18 @@ export const config = {
     */
     '/((?!_next/static|_next/image|favicon.ico|api).*)',
   ],
+}
+*/
+
+// A proteção de rotas agora é feita pelo ClientLayout em src/app/(main)/client-layout.tsx
+// que usa o AuthContext para verificar autenticação de forma mais compatível
+
+export function middleware() {
+  // Middleware desativado - permite que todas as requisições passem
+  return
+}
+
+// Config vazio para desativar o matcher
+export const config = {
+  matcher: [],
 }

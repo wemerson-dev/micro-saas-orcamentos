@@ -15,10 +15,15 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      console.log('User not authenticated, redirecting to login...');
-      router.push('/login');
-    }
+    // Aguardar um pouco mais para dar tempo ao AuthContext sincronizar após login
+    const timer = setTimeout(() => {
+      if (!loading && !user) {
+        console.log('ClientLayout: User not authenticated, redirecting to login...');
+        router.push('/login');
+      }
+    }, 300); // Pequeno delay para evitar corrida com login
+    
+    return () => clearTimeout(timer);
   }, [user, loading, router]);
 
   // Mostrar loading enquanto verifica auth
