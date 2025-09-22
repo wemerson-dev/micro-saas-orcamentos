@@ -6,6 +6,7 @@
 // =============================================================================
 
 import { Request, Response, NextFunction } from "express";
+import { console } from "inspector";
 import jwt from "jsonwebtoken";
 
 export interface AuthenticatedRequest extends Request {
