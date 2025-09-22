@@ -50,6 +50,7 @@ import {
 import { useEffect, useState, useCallback, useRef } from "react"
 import axios from "axios"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/context/AuthContext"
 
 interface UserData {
     id: string   
@@ -88,6 +89,7 @@ export default function UserProfilePage() {
     const [error, setError] = useState<string>("")
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false)
+    const { session } = useAuth() // Obter a sessão do contexto de autenticação
     
     // Estados para uploads
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
@@ -111,7 +113,9 @@ export default function UserProfilePage() {
     const getUserIdFromToken = (token: string): string | null => {
         try {
             const payload = JSON.parse(atob(token.split(".")[1]))
-            return payload.id || payload.userId || null
+            // O ID do usuário no payload do Supabase geralmente está em 'sub' ou 'user_metadata.sub'
+            console.log(`Payload:${payload},PayloadSub: ${payload.sub}, PayloadId: ${payload.id} `)
+            return payload.sub || payload.user_metadata.sub || null
         } catch (error) {
             console.error("Erro ao decodificar token:", error)
             return null
@@ -218,14 +222,17 @@ export default function UserProfilePage() {
             setLoading(true)
             setError("")
             
-            const token = localStorage.getItem("token")
+            const token = session?.access_token
             if (!token) {
                 setError("Token de autenticação não encontrado.")
+                // Redirecionar para login se não houver token
+                window.location.href = '/login'
                 return
             }
 
             const userId = getUserIdFromToken(token)
             if (!userId) {
+                console.log(`conteudo userId: ${userId}`)
                 setError("Não foi possível obter o ID do usuário.")
                 return
             }
@@ -300,7 +307,7 @@ export default function UserProfilePage() {
             setSaving(true)
             setUploadProgress(0)
             
-            const token = localStorage.getItem("token")
+            const token = session?.access_token
             const userId = getUserIdFromToken(token!)
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 

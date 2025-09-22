@@ -19,9 +19,9 @@ export interface AuthenticatedRequest extends Request {
 }
 
 interface JWTPayload {
-  id: string;
+  sub: string; // ID do usuário no Supabase
   email?: string;
-  nome?: string;
+  name?: string; // Propriedade 'name' no user_metadata do Supabase
 }
 
 export const verificarToken = async (
@@ -41,6 +41,7 @@ export const verificarToken = async (
     }
 
     const token = authHeader.split(" ")[1];
+    console.log(`token gerado: ${token}`)
 
     if (!process.env.JWT_SECRET) {
       console.error("JWT_SECRET não configurado!");
@@ -68,14 +69,14 @@ export const verificarToken = async (
     // }
 
     // Adicionar informações do usuário à requisição
-    req.usuarioId = decoded.id;
+    req.usuarioId = decoded.sub; // Usar 'sub' que é o ID do usuário do Supabase
     req.usuario = {
-      id: decoded.id,
-      nome: decoded.nome || '',
+      id: decoded.sub, // Usar 'sub' para o ID
+      nome: decoded.name || '', // Usar 'name' do user_metadata
       email: decoded.email || ''
     };
 
-    console.log(`🔐 Usuário autenticado: ${decoded.id}`);
+    console.log(`🔐 Usuário autenticado: ${decoded.sub}`);
     next();
     
   } catch (err: any) {

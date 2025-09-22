@@ -88,6 +88,7 @@ import {
 import { useEffect, useState, useCallback } from "react"
 import axios from "axios"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/context/AuthContext"
 
 interface Cliente {
     id: string
@@ -136,6 +137,7 @@ export default function ClientesPage() {
     const [loading, setLoading] = useState<boolean>(true)
     const [saving, setSaving] = useState<boolean>(false)
     const [error, setError] = useState<string>("")
+    const { session } = useAuth() // Obter a sessão do contexto de autenticação
     
     // Estados do modal/formulário
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
@@ -229,9 +231,11 @@ export default function ClientesPage() {
             setLoading(true)
             setError("")
             
-            const token = localStorage.getItem("token")
+            const token = session?.access_token
             if (!token) {
                 setError("Token de autenticação não encontrado.")
+                // Redirecionar para login se não houver token
+                window.location.href = '/login'
                 return
             }
 
@@ -379,7 +383,7 @@ export default function ClientesPage() {
             setSaving(true)
             setUploadProgress(0)
             
-            const token = localStorage.getItem("token")
+            const token = session?.access_token
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
             setUploadProgress(50)
@@ -428,7 +432,7 @@ export default function ClientesPage() {
     // Deletar cliente
     const handleDelete = async (clienteId: string) => {
         try {
-            const token = localStorage.getItem("token")
+            const token = session?.access_token
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
             
             await axios.delete(`${apiUrl}/cliente/deletar/${clienteId}`, {
