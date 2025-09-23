@@ -56,12 +56,14 @@ model Cliente {
 
 model Orcamento {
   id          String  @id @default(uuid())
-  numOrc      Int @unique
+  numOrc      Int
   status      String @default("pendente")
   dataEmissao DateTime @default(now())
   clienteId   String
   cliente     Cliente @relation(fields: [clienteId], references: [id])
   itens       ItemOrcamento[]
+
+  @@unique([numOrc, clienteId]) // Restrição de unicidade composta
 }
 
 model ItemOrcamento {
