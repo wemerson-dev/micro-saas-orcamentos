@@ -121,12 +121,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Erro ao fazer logout:', error);
+    try {
+      setLoading(true);
+      console.log('AuthContext: Iniciando logout...');
+      
+      // Fazer logout no Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Erro ao fazer logout no Supabase:', error);
+        throw error;
+      }
+      
+      // Limpar storage local e cookies imediatamente
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      document.cookie = 'token=; Path=/; Max-Age=0; SameSite=Lax';
+      document.cookie = 'userId=; Path=/; Max-Age=0; SameSite=Lax';
+      
+      console.log('AuthContext: Logout realizado com sucesso');
+    } catch (error) {
+      console.error('Erro durante logout:', error);
+      // Mesmo com erro, limpar dados locais
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      document.cookie = 'token=; Path=/; Max-Age=0; SameSite=Lax';
+      document.cookie = 'userId=; Path=/; Max-Age=0; SameSite=Lax';
+      throw error;
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const resetPassword = async (email: string) => {
