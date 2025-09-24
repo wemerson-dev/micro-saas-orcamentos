@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+// ATENÇÃO: Este hook está obsoleto!
+// Use o AuthContext em @/context/AuthContext.tsx
+// 
+// Para migrar:
+// import { useAuth } from '@/context/AuthContext'
+//
+// ❌ Não usar mais este arquivo
+// ✅ Usar: const { user, loading, signOut } = useAuth()
 
 export function useAuth() {
-  const router = useRouter();
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-    }
-  }, [router]);
+  console.warn('⚠️ useAuth hook obsoleto! Use AuthContext em @/context/AuthContext.tsx')
+  throw new Error('Hook obsoleto. Use AuthContext!')
 } 

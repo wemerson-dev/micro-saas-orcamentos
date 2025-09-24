@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/AuthContext"
 import {
   BadgeCheck,
   Bell,
@@ -41,14 +42,18 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { signOut, loading } = useAuth()
   const router = useRouter()
 
-  function logout() {
-    // Remove os cookies de autenticação ao expirar a data deles
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'userId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    // Redireciona para a página de login
-    router.push('/login');
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      // O redirecionamento será automático via AuthContext
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error)
+      // Fallback: redirecionar manualmente
+      router.push('/login')
+    }
   }
 
 
@@ -113,7 +118,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>
+            <DropdownMenuItem onClick={handleLogout} disabled={loading}>
               <LogOut/>
               Log out
             </DropdownMenuItem>
