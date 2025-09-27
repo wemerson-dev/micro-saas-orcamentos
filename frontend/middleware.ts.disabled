@@ -1,0 +1,16 @@
+// middleware.ts - DESATIVADO
+// A proteção de rotas é feita pelo AuthContext em client-side
+
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+// Middleware desativado - todas as requisições passam sem verificação
+// A autenticação é gerenciada pelo AuthContext do lado cliente
+export function middleware(request: NextRequest) {
+  return NextResponse.next()
+}
+
+// Matcher vazio para desativar o middleware
+export const config = {
+  matcher: [],
+}
