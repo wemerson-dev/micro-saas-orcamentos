@@ -1,24 +1,23 @@
-
 'use client';
 import { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import { supabase } from '@/lib/supabase';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  token: string | null;  // ← ADICIONADO para compatibilidade
+  token: string | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signUp: (email: string, password: string, name: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
+  resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
-  token: null,  // ← ADICIONADO
+  token: null,
   loading: true,
   signIn: async () => ({ error: null }),
   signUp: async () => ({ error: null }),
@@ -29,7 +28,7 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [token, setToken] = useState<string | null>(null);  // ← ADICIONADO
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('AuthContext: Initial session:', session ? 'Found' : 'Not found');
       setSession(session);
       setUser(session?.user ?? null);
-      setToken(session?.access_token ?? null);  // ← ADICIONADO
+      setToken(session?.access_token ?? null);
       setLoading(false);
     };
 
@@ -53,14 +52,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         setSession(session);
         setUser(session?.user ?? null);
-        setToken(session?.access_token ?? null);  // ← ADICIONADO
+        setToken(session?.access_token ?? null);
         
         // Sincronizar com localStorage E cookies para compatibilidade
         if (session?.access_token && session?.user?.id) {
           localStorage.setItem('token', session.access_token);
           localStorage.setItem('userId', session.user.id);
           
-          // ← ADICIONAR cookies para compatibilidade com layout
+          // Adicionar cookies para compatibilidade com layout
           document.cookie = `token=${session.access_token}; Path=/; Max-Age=28800; SameSite=Lax`;
           document.cookie = `userId=${session.user.id}; Path=/; Max-Age=28800; SameSite=Lax`;
           
@@ -69,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           localStorage.removeItem('token');
           localStorage.removeItem('userId');
           
-          // ← REMOVER cookies
+          // Remover cookies
           document.cookie = 'token=; Path=/; Max-Age=0; SameSite=Lax';
           document.cookie = 'userId=; Path=/; Max-Age=0; SameSite=Lax';
           
@@ -93,7 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       return { error };
     } catch (error) {
-      return { error };
+      return { error: error as AuthError };
     } finally {
       setLoading(false);
     }
@@ -102,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUp = async (email: string, password: string, name: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -114,7 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { error };
     } catch (error) {
-      return { error };
+      return { error: error as AuthError };
     } finally {
       setLoading(false);
     }
@@ -163,7 +162,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider value={{
       user,
       session,
-      token,  // ← ADICIONADO
+      token,
       loading,
       signIn,
       signUp,

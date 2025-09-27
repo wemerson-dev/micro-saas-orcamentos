@@ -1,7 +1,7 @@
 "use client"
 
 // hooks/use-toast.tsx
-import React, { useState, useCallback } from "react"
+import React, { useState } from "react"
 
 export interface Toast {
   id: string
@@ -9,6 +9,14 @@ export interface Toast {
   description?: string
   variant?: "default" | "destructive"
   duration?: number
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+interface ToastAction {
+  type: "ADD_TOAST" | "UPDATE_TOAST" | "DISMISS_TOAST" | "REMOVE_TOAST"
+  toast?: Toast
+  toastId?: string
 }
 
 const TOAST_REMOVE_DELAY = 1000000
@@ -37,15 +45,15 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
-export const reducer = (state: Toast[], action: any): Toast[] => {
+export const reducer = (state: Toast[], action: ToastAction): Toast[] => {
   switch (action.type) {
     case "ADD_TOAST":
-      return [...state, action.toast]
+      return action.toast ? [...state, action.toast] : state
 
     case "UPDATE_TOAST":
-      return state.map((t) =>
-        t.id === action.toast.id ? { ...t, ...action.toast } : t
-      )
+      return action.toast ? state.map((t) =>
+        t.id === action.toast!.id ? { ...t, ...action.toast } : t
+      ) : state
 
     case "DISMISS_TOAST": {
       const { toastId } = action
@@ -80,7 +88,7 @@ export const reducer = (state: Toast[], action: any): Toast[] => {
 const listeners: Array<(state: Toast[]) => void> = []
 let memoryState: Toast[] = []
 
-function dispatch(action: any) {
+function dispatch(action: ToastAction) {
   memoryState = reducer(memoryState, action)
   listeners.forEach((listener) => {
     listener(memoryState)
