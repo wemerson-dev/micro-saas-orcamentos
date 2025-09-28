@@ -51,6 +51,7 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import axios from "axios"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
+import { supabase } from '@/lib/supabase'
 
 interface UserData {
     id: string   
@@ -89,7 +90,7 @@ export default function UserProfilePage() {
     const [error, setError] = useState<string>("")
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false)
-    const { session } = useAuth() // Obter a sessão do contexto de autenticação
+    const { session, refreshUserData } = useAuth() // Obter a sessão do contexto de autenticação
     
     // Estados para uploads
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
@@ -345,6 +346,27 @@ export default function UserProfilePage() {
                 })
             }
 
+            // ✅ SINCRONIZAR COM SUPABASE - Atualizar user metadata
+            try {
+                await supabase.auth.updateUser({
+                    data: {
+                        nome: formData.nome,
+                        telefone: formData.telefone,
+                        endereco: formData.endereco,
+                        bairro: formData.bairro,
+                        numero: formData.numero,
+                        cidade: formData.cidade,
+                        CEP: formData.CEP,
+                        UF: formData.UF,
+                        // Não incluir campos sensíveis como senha
+                    }
+                })
+                console.log('Supabase user metadata updated successfully')
+            } catch (supabaseError) {
+                console.warn('Failed to update Supabase metadata:', supabaseError)
+                // Não interromper o fluxo se Supabase falhar
+            }
+
             setUploadProgress(100)
 
             setUserData(formData)
@@ -354,6 +376,9 @@ export default function UserProfilePage() {
             setLogoFile(null)
             setAvatarPreview("")
             setLogoPreview("")
+            
+            // ✅ Atualizar dados no AuthContext para sincronização
+            await refreshUserData()
             
             toast({
                 title: "Sucesso!",

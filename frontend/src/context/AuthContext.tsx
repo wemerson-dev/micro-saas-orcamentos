@@ -2,9 +2,24 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import { supabase } from '@/lib/supabase';
 import { User, Session, AuthError } from '@supabase/supabase-js';
+import axios from 'axios';
+
+interface ExtendedUser extends User {
+  // Campos adicionais do backend
+  nome?: string;
+  telefone?: string;
+  endereco?: string;
+  bairro?: string;
+  numero?: string;
+  cidade?: string;
+  CEP?: string;
+  UF?: string;
+  avatar?: string;
+  logo?: string;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: ExtendedUser | null;
   session: Session | null;
   token: string | null;
   loading: boolean;
@@ -12,6 +27,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, name: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  refreshUserData: () => Promise<void>; // ✅ Nova função para atualizar dados
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -23,13 +39,52 @@ const AuthContext = createContext<AuthContextType>({
   signUp: async () => ({ error: null }),
   signOut: async () => {},
   resetPassword: async () => ({ error: null }),
+  refreshUserData: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // ✅ Função para buscar dados completos do backend
+  const fetchUserProfile = async (accessToken: string, supabaseUser: User): Promise<ExtendedUser> => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await axios.get(`${apiUrl}/usuario/perfil`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+
+      // ✅ Combinar dados do Supabase com dados do backend
+      const combinedUser: ExtendedUser = {
+        ...supabaseUser,
+        // Dados do backend sobrescrevem dados do Supabase
+        ...response.data,
+        // Manter campos essenciais do Supabase
+        id: supabaseUser.id,
+        email: supabaseUser.email!,
+        created_at: supabaseUser.created_at,
+        updated_at: supabaseUser.updated_at,
+      };
+
+      console.log('AuthContext: User profile fetched from backend:', combinedUser.nome || combinedUser.email);
+      return combinedUser;
+
+    } catch (error) {
+      console.warn('AuthContext: Failed to fetch user profile from backend, using Supabase data only:', error);
+      // ✅ Fallback para dados do Supabase se backend falhar
+      return supabaseUser as ExtendedUser;
+    }
+  };
+
+  // ✅ Função pública para atualizar dados do usuário
+  const refreshUserData = async () => {
+    if (session?.access_token && session?.user) {
+      const updatedUser = await fetchUserProfile(session.access_token, session.user);
+      setUser(updatedUser);
+    }
+  };
 
   useEffect(() => {
     // Obter sessão inicial
@@ -37,9 +92,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('AuthContext: Getting initial session...');
       const { data: { session } } = await supabase.auth.getSession();
       console.log('AuthContext: Initial session:', session ? 'Found' : 'Not found');
+      
       setSession(session);
-      setUser(session?.user ?? null);
       setToken(session?.access_token ?? null);
+      
+      if (session?.user) {
+        // ✅ Buscar dados completos do backend
+        const fullUser = await fetchUserProfile(session.access_token!, session.user);
+        setUser(fullUser);
+      } else {
+        setUser(null);
+      }
+      
       setLoading(false);
     };
 
@@ -51,24 +115,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log('AuthContext: Auth state changed:', event, session ? `User: ${session.user?.email}` : 'No session');
         
         setSession(session);
-        setUser(session?.user ?? null);
         setToken(session?.access_token ?? null);
         
-        // Sincronizar com localStorage E cookies para compatibilidade
+        if (session?.user) {
+          // ✅ Buscar dados completos do backend
+          const fullUser = await fetchUserProfile(session.access_token!, session.user);
+          setUser(fullUser);
+        } else {
+          setUser(null);
+        }
+        
+        // Sincronizar com localStorage e cookies
         if (session?.access_token && session?.user?.id) {
           localStorage.setItem('token', session.access_token);
           localStorage.setItem('userId', session.user.id);
           
-          // Adicionar cookies para compatibilidade com layout
           document.cookie = `token=${session.access_token}; Path=/; Max-Age=28800; SameSite=Lax`;
           document.cookie = `userId=${session.user.id}; Path=/; Max-Age=28800; SameSite=Lax`;
           
-          console.log('AuthContext: User session stored:', session.user.email);
+          console.log('AuthContext: User session stored');
         } else {
           localStorage.removeItem('token');
           localStorage.removeItem('userId');
           
-          // Remover cookies
           document.cookie = 'token=; Path=/; Max-Age=0; SameSite=Lax';
           document.cookie = 'userId=; Path=/; Max-Age=0; SameSite=Lax';
           
@@ -124,14 +193,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       console.log('AuthContext: Iniciando logout...');
       
-      // Fazer logout no Supabase
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Erro ao fazer logout no Supabase:', error);
         throw error;
       }
       
-      // Limpar storage local e cookies imediatamente
+      // Limpar storage local e cookies
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       document.cookie = 'token=; Path=/; Max-Age=0; SameSite=Lax';
@@ -140,7 +208,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('AuthContext: Logout realizado com sucesso');
     } catch (error) {
       console.error('Erro durante logout:', error);
-      // Mesmo com erro, limpar dados locais
+      // Limpar dados mesmo com erro
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       document.cookie = 'token=; Path=/; Max-Age=0; SameSite=Lax';
@@ -168,6 +236,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       signUp,
       signOut,
       resetPassword,
+      refreshUserData, // ✅ Expor função para componentes
     }}>
       {children}
     </AuthContext.Provider>
