@@ -126,36 +126,36 @@ export default function UserProfilePage() {
     const validateField = useCallback((name: string, value: string): string => {
         switch (name) {
             case 'nome':
-                if (!value.trim()) return 'Nome é obrigatório'
-                if (value.length < 2) return 'Nome deve ter pelo menos 2 caracteres'
+                if (!(value ?? '').trim()) return 'Nome é obrigatório'
+                if ((value ?? '').length < 2) return 'Nome deve ter pelo menos 2 caracteres'
                 return ''
             case 'email':
-                if (!value.trim()) return 'Email é obrigatório'
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Email inválido'
+                if (!(value ?? '').trim()) return 'Email é obrigatório'
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value ?? '')) return 'Email inválido'
                 return ''
             case 'telefone':
-                if (!value.trim()) return 'Telefone é obrigatório'
-                if (!/^\(\d{2}\)\s\d{4,5}-\d{4}$/.test(value)) return 'Formato: (11) 99999-9999'
+                if (!(value ?? '').trim()) return 'Telefone é obrigatório'
+                if (!/^\(\d{2}\)\s\d{4,5}-\d{4}$/.test(value ?? '')) return 'Formato: (11) 99999-9999'
                 return ''
             case 'CEP':
-                if (!value.trim()) return 'CEP é obrigatório'
-                if (!/^\d{5}-?\d{3}$/.test(value)) return 'Formato: 12345-678'
+                if (!(value ?? '').trim()) return 'CEP é obrigatório'
+                if (!/^\d{5}-?\d{3}$/.test(value ?? '')) return 'Formato: 12345-678'
                 return ''
             case 'endereco':
-                if (!value.trim()) return 'Endereço é obrigatório'
+                if (!(value ?? '').trim()) return 'Endereço é obrigatório'
                 return ''
             case 'bairro':
-                if (!value.trim()) return 'Bairro é obrigatório'
+                if (!(value ?? '').trim()) return 'Bairro é obrigatório'
                 return ''
             case 'cidade':
-                if (!value.trim()) return 'Cidade é obrigatória'
+                if (!(value ?? '').trim()) return 'Cidade é obrigatória'
                 return ''
             case 'UF':
-                if (!value.trim()) return 'UF é obrigatório'
-                if (value.length !== 2) return 'UF deve ter 2 caracteres'
+                if (!(value ?? '').trim()) return 'UF é obrigatório'
+                if ((value ?? '').length !== 2) return 'UF deve ter 2 caracteres'
                 return ''
             case 'numero':
-                if (!value.trim()) return 'Número é obrigatório'
+                if (!(value ?? '').trim()) return 'Número é obrigatório'
                 return ''
             default:
                 return ''
