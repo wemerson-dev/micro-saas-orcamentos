@@ -57,14 +57,14 @@ interface UserData {
     id: string   
     nome: string
     email: string   
-    senha: string
-    endereco: string
-    bairro: string
-    numero: string
-    cidade: string
-    telefone: string
-    CEP: string
-    UF: string
+    senha?: string // ✅ Opcional
+    endereco?: string // ✅ Pode ser undefined
+    bairro?: string // ✅ Pode ser undefined
+    numero?: string // ✅ Pode ser undefined
+    cidade?: string // ✅ Pode ser undefined
+    telefone?: string // ✅ Pode ser undefined
+    CEP?: string // ✅ Pode ser undefined
+    UF?: string // ✅ Pode ser undefined
     avatar?: string
     logo?: string
 }
@@ -124,39 +124,41 @@ export default function UserProfilePage() {
     }
 
     // Validações em tempo real
-    const validateField = useCallback((name: string, value: string): string => {
+    const validateField = useCallback((name: string, value: string | undefined | null): string => {
+        const safeValue = (value ?? '').toString().trim(); // ✅ Conversão segura
+        
         switch (name) {
             case 'nome':
-                if (!(value ?? '').trim()) return 'Nome é obrigatório'
-                if ((value ?? '').length < 2) return 'Nome deve ter pelo menos 2 caracteres'
+                if (!safeValue) return 'Nome é obrigatório'
+                if (safeValue.length < 2) return 'Nome deve ter pelo menos 2 caracteres'
                 return ''
             case 'email':
-                if (!(value ?? '').trim()) return 'Email é obrigatório'
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value ?? '')) return 'Email inválido'
+                if (!safeValue) return 'Email é obrigatório'
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(safeValue)) return 'Email inválido'
                 return ''
             case 'telefone':
-                if (!(value ?? '').trim()) return 'Telefone é obrigatório'
-                if (!/^\(\d{2}\)\s\d{4,5}-\d{4}$/.test(value ?? '')) return 'Formato: (11) 99999-9999'
+                if (!safeValue) return 'Telefone é obrigatório'
+                if (!/^\(\d{2}\)\s\d{4,5}-\d{4}$/.test(safeValue)) return 'Formato: (11) 99999-9999'
                 return ''
             case 'CEP':
-                if (!(value ?? '').trim()) return 'CEP é obrigatório'
-                if (!/^\d{5}-?\d{3}$/.test(value ?? '')) return 'Formato: 12345-678'
+                if (!safeValue) return 'CEP é obrigatório'
+                if (!/^\d{5}-?\d{3}$/.test(safeValue)) return 'Formato: 12345-678'
                 return ''
             case 'endereco':
-                if (!(value ?? '').trim()) return 'Endereço é obrigatório'
+                if (!safeValue) return 'Endereço é obrigatório'
                 return ''
             case 'bairro':
-                if (!(value ?? '').trim()) return 'Bairro é obrigatório'
+                if (!safeValue) return 'Bairro é obrigatório'
                 return ''
             case 'cidade':
-                if (!(value ?? '').trim()) return 'Cidade é obrigatória'
+                if (!safeValue) return 'Cidade é obrigatória'
                 return ''
             case 'UF':
-                if (!(value ?? '').trim()) return 'UF é obrigatório'
-                if ((value ?? '').length !== 2) return 'UF deve ter 2 caracteres'
+                if (!safeValue) return 'UF é obrigatório'
+                if (safeValue.length !== 2) return 'UF deve ter 2 caracteres'
                 return ''
             case 'numero':
-                if (!(value ?? '').trim()) return 'Número é obrigatório'
+                if (!safeValue) return 'Número é obrigatório'
                 return ''
             default:
                 return ''
@@ -171,7 +173,8 @@ export default function UserProfilePage() {
         const fields = ['nome', 'email', 'telefone', 'endereco', 'bairro', 'cidade', 'CEP', 'UF', 'numero']
         
         fields.forEach(field => {
-            const error = validateField(field, formData[field as keyof UserData] as string)
+            const fieldValue = formData[field as keyof UserData]
+            const error = validateField(field, fieldValue as string)
             if (error) newErrors[field as keyof FormErrors] = error
         })
         
@@ -197,7 +200,8 @@ export default function UserProfilePage() {
     const handleFieldBlur = (name: string) => {
         setTouchedFields(prev => new Set(prev).add(name))
         if (formData) {
-            const error = validateField(name, formData[name as keyof UserData] as string)
+            const fieldValue = formData[name as keyof UserData]
+            const error = validateField(name, fieldValue as string)
             setErrors(prev => ({ ...prev, [name]: error || undefined }))
         }
     }
@@ -215,6 +219,25 @@ export default function UserProfilePage() {
     const formatCEP = (value: string) => {
         const numbers = value.replace(/\D/g, '')
         return numbers.replace(/(\d{5})(\d{3})/, '$1-$2')
+    }
+
+    // ✅ Função para garantir dados seguros
+    const safeUserData = (data: any): UserData => {
+        return {
+            id: data?.id || '',
+            nome: data?.nome || '',
+            email: data?.email || '',
+            senha: data?.senha || undefined,
+            endereco: data?.endereco || '',
+            bairro: data?.bairro || '',
+            numero: data?.numero || '',
+            cidade: data?.cidade || '',
+            telefone: data?.telefone || '',
+            CEP: data?.CEP || '',
+            UF: data?.UF || '',
+            avatar: data?.avatar || undefined,
+            logo: data?.logo || undefined,
+        }
     }
 
     // Carregamento dos dados do usuário
@@ -244,8 +267,9 @@ export default function UserProfilePage() {
             })
 
             if (response.data) {
-                setUserData(response.data)
-                setFormData(response.data)
+                const safeData = safeUserData(response.data) // ✅ Dados seguros
+                setUserData(safeData)
+                setFormData(safeData)
             }
         } catch (error: any) {
             const errorMessage = error.response?.data?.erro || error.message || "Erro ao carregar dados do usuário."
