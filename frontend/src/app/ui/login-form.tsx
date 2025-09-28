@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext'; // Ajuste o caminho
-//import { useRouter } from 'next/navigation'; // Ou useRouter para Next.js
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ interface LoginResponse {
 }
 
 interface LoginFormProps {
-  onLoginSuccess?: (data: LoginResponse) => void; // Tornar opcional
+  onLoginSuccess?: (data: LoginResponse) => void;
 } 
 
 const validarEmail = (email: string) =>
@@ -28,59 +28,62 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  //const router = useRouter(); // Ou useRouter para Next.js
+  const { signIn } = useAuth(); // ✅ Usar signIn em vez de login
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
+    
     if (!validarEmail(email)) {
       setErro('Email inválido.');
       return;
     }
+    
     if (senha.length < 6) {
       setErro('A senha deve ter pelo menos 6 caracteres.');
       return;
     }
+    
     setLoading(true);
+    
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${apiUrl}/usuario/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha }),
-      });
-      if (!res.ok) {
-        const errorData = await res.json();
-        setErro(errorData.erro || 'Email ou senha inválidos.');
+      // ✅ Usar signIn do AuthContext (Supabase) em vez de API customizada
+      const { error } = await signIn(email, senha);
+      
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          setErro('Email ou senha incorretos.');
+        } else if (error.message.includes('Email not confirmed')) {
+          setErro('Por favor, confirme seu email antes de fazer login.');
+        } else {
+          setErro(error.message || 'Erro ao fazer login.');
+        }
         return;
       }
-      const data: LoginResponse = await res.json();
-      console.log('Resposta do login:', data);
 
-      // Salvar token e userId usando AuthContext
-      login(data.token, data.usuario.id);
-
-      // Também salvar em cookies para que Middleware e layouts no servidor consigam ler
-      const maxAgeSeconds = 60 * 60 * 8; // 8 horas (mesmo do backend)
-      try {
-        document.cookie = `token=${data.token}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax`;
-        document.cookie = `userId=${data.usuario.id}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax`;
-      } catch (cookieErr) {
-        console.warn('Falha ao escrever cookies:', cookieErr);
-      }
-
-      // Chamar onLoginSuccess, se fornecido
+      // ✅ Login bem-sucedido - o AuthContext já gerencia token/sessão
+      console.log('Login realizado com sucesso via Supabase');
+      
+      // ✅ Se houver callback de sucesso, criar dados compatíveis
       if (onLoginSuccess) {
-        console.log('Chamando onLoginSuccess com:', data);
-        onLoginSuccess(data);
+        const mockData: LoginResponse = {
+          token: 'supabase-managed',
+          usuario: {
+            id: 'supabase-user-id',
+            nome: email, // Usar email como nome temporariamente
+            email: email
+          }
+        };
+        onLoginSuccess(mockData);
       }
 
-      // Redirecionar para a página de perfil
-      //router.push('/dashboard');
+      // ✅ Redirecionar para dashboard
+      router.push('/dashboard');
+      
     } catch (err) {
-      console.error('Erro ao conectar com o servidor:', err);
-      setErro(err instanceof Error ? `Erro ao conectar com o servidor: ${err.message}` : 'Erro ao conectar com o servidor.');
+      console.error('Erro durante login:', err);
+      setErro('Erro inesperado ao fazer login. Tente novamente.');
     } finally {
       setLoading(false);
     }
