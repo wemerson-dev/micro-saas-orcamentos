@@ -42,19 +42,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const data = {
   teams: [
     {
-      name: "Acme Inc",
+      name: "MicroSaaS Orçamentos",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      plan: "Professional",
     },
     {
-      name: "Acme Corp.",
+      name: "Gestão Completa",
       logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      plan: "Premium",
     },
   ],
   navMain: [
@@ -66,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       items: [
         {
           title: "Perfil do Usuário",
-          url: "http://localhost:3000/usuarios",
+          url: "/usuarios", // ✅ URL relativa
         },  
       ],
     },
@@ -77,7 +72,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       items: [
         {
           title: "Cadastro de Clientes",
-          url: "http://localhost:3000/clientes",
+          url: "/clientes", // ✅ URL relativa
         },
       ],
     },
@@ -88,50 +83,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       items: [
         {
           title: "Cadastro de Orçamentos",
-          url: "http://localhost:3000/orcamentos",
+          url: "/orcamentos", // ✅ URL relativa
         },
       ],
     },
-    /*{
-      title: "Settings",
+    {
+      title: "Configurações",
       url: "#",
       icon: Settings2,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "Geral",
+          url: "/configuracoes",
         },
         {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: "Perfil",
+          url: "/perfil",
         },
       ],
-    },*/
+    },
   ],
   projects: [
     {
       name: "Dashboard",
-      url: "http://localhost:3000/dashboard",
+      url: "/dashboard", // ✅ URL relativa
       icon: ChartNoAxesCombined,
     },
-    /*{
-      name: "Sales & Marketing",
-      url: "#",
+    {
+      name: "Relatórios",
+      url: "/relatorios", // ✅ URL relativa (página futura)
       icon: PieChart,
-    },*/
-    /*{
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },*/
+    },
   ],
   }
 
