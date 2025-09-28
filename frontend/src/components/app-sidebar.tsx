@@ -87,21 +87,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         },
       ],
     },
-    {
-      title: "Configurações",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Geral",
-          url: "/configuracoes",
-        },
-        {
-          title: "Perfil",
-          url: "/perfil",
-        },
-      ],
-    },
   ],
   projects: [
     {
@@ -109,11 +94,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/dashboard", // ✅ URL relativa
       icon: ChartNoAxesCombined,
     },
-    {
+/*    {
       name: "Relatórios",
       url: "/relatorios", // ✅ URL relativa (página futura)
       icon: PieChart,
-    },
+    },*/
   ],
   }
 
