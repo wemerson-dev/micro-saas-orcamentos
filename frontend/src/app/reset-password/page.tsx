@@ -1,7 +1,7 @@
 // src/app/reset-password/page.tsx
 "use client"
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
   CheckCircle,
   ArrowLeft
 } from 'lucide-react';
+import { Session } from '@supabase/supabase-js';
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('');
@@ -25,11 +26,18 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [mounted, setMounted] = useState(false);
 
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // ✅ Verificar se estamos no client-side antes de acessar window
+    if (!mounted || typeof window === 'undefined') return;
+
     // Verificar se há um hash de recuperação de senha na URL
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const accessToken = hashParams.get('access_token');
@@ -40,9 +48,9 @@ export default function ResetPasswordPage() {
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
-      } as any);
+      } as Session);
     }
-  }, []);
+  }, [mounted]);
 
   const validatePassword = (password: string) => {
     return password.length >= 6;
@@ -89,6 +97,18 @@ export default function ResetPasswordPage() {
     }
   };
 
+  // ✅ Mostrar loading até o componente estar montado no client
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
       <div className="w-full max-w-md space-y-6">
@@ -102,13 +122,14 @@ export default function ResetPasswordPage() {
             <div className="flex items-center">
               <AlertCircle className="h-4 w-4 mr-2" />
               <strong className="font-bold">Erro!</strong>
-              <span className="block sm:inline"> {error}</span>
+              <span className="block sm:inline ml-1">{error}</span>
             </div>
-            <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
-              <button onClick={() => setError('')} className="text-red-800">
-                <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Fechar</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.759 3.15c.146.16.342.24.53.24.188 0 .384-.08.53-.24.148-.16.24-.36.24-.55 0-.19-.092-.39-.24-.55z"/></svg>
-              </button>
-            </span>
+            <button 
+              onClick={() => setError('')} 
+              className="absolute top-0 bottom-0 right-0 px-4 py-3 text-red-800 hover:text-red-900"
+            >
+              <span className="text-2xl">&times;</span>
+            </button>
           </div>
         )}
 
@@ -117,13 +138,14 @@ export default function ResetPasswordPage() {
             <div className="flex items-center">
               <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
               <strong className="font-bold">Sucesso!</strong>
-              <span className="block sm:inline"> {success}</span>
+              <span className="block sm:inline ml-1">{success}</span>
             </div>
-            <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
-              <button onClick={() => setSuccess('')} className="text-green-800">
-                <svg className="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Fechar</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.759 3.15c.146.16.342.24.53.24.188 0 .384-.08.53-.24.148-.16.24-.36.24-.55 0-.19-.092-.39-.24-.55z"/></svg>
-              </button>
-            </span>
+            <button 
+              onClick={() => setSuccess('')} 
+              className="absolute top-0 bottom-0 right-0 px-4 py-3 text-green-800 hover:text-green-900"
+            >
+              <span className="text-2xl">&times;</span>
+            </button>
           </div>
         )}
 
