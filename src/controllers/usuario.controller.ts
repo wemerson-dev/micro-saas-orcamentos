@@ -8,6 +8,7 @@ import { AuthenticatedRequest } from "../middlewares/auth.middleware";
 import prisma from "../prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { syncUserMetadata } from "../utils/supabase-admin";
 
 // Interfaces para os corpos das requisições
 interface RegistrarRequestBody {
@@ -214,6 +215,9 @@ const usuarioController = {
                     logoPath: true,
                 }
             });
+
+            // Sincronizar com Supabase Auth metadata
+            await syncUserMetadata(usuarioId, usuarioAtualizado);
 
             res.json(usuarioAtualizado);
         } catch (error) {

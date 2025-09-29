@@ -1,5 +1,45 @@
-node_modules
-# Keep environment variables out of version control
-.env
+# Dependencies
+node_modules/
+**/node_modules/
 
-/src/generated/prisma
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Prisma
+/src/generated/
+prisma/migrations/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output
+
+# Uploads (local development)
+uploads/
+!uploads/.gitkeep
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
