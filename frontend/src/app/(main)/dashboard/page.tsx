@@ -195,18 +195,14 @@ export default function DashboardPage() {
             // Carregar dados em paralelo
             const [
                 orcamentosRes,
-                clientesRes,
-                atividadesRes
+                clientesRes
             ] = await Promise.all([
                 axios.get(`${apiUrl}/Orcamento/listar`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
                 axios.get(`${apiUrl}/Cliente/listar`, {
                     headers: { Authorization: `Bearer ${token}` }
-                }),
-                axios.get(`${apiUrl}/dashboard/atividades`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                }).catch(() => ({ data: [] })) // Fallback se endpoint não existir
+                })
             ])
 
             // Processar estatísticas dos orçamentos
