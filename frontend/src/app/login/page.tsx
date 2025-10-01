@@ -629,7 +629,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Stats */}
+          {/* Stats 
           <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-300">+1000</div>
@@ -643,9 +643,9 @@ export default function LoginPage() {
               <div className="text-2xl font-bold text-purple-300">24/7</div>
               <div className="text-sm text-blue-100">Suporte</div>
             </div>
-          </div>
+          </div> */}
 
-          {/* Testimonial */}
+          {/* Testimonial 
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
             <p className="text-blue-50 italic mb-4">
               "Transformou completamente a forma como gerencio meus orçamentos. 
@@ -660,7 +660,7 @@ export default function LoginPage() {
                 <div className="text-xs text-blue-200">Empresária</div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
