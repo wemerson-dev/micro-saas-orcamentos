@@ -323,6 +323,7 @@ export default function HomePage() {
       </section>
 
       {/* Pricing Section */}
+      {/*
       <section id="pricing" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -338,7 +339,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Free Plan */}
+            {/* Free Plan 
             <Card className="border-2 border-gray-200">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Gratuito</h3>
@@ -369,7 +370,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Pro Plan */}
+            {/* Pro Plan 
             <Card className="border-2 border-blue-500 relative scale-105">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <Badge className="bg-blue-500 text-white">Mais Popular</Badge>
@@ -407,7 +408,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Enterprise Plan */}
+            {/* Enterprise Plan 
             <Card className="border-2 border-gray-200">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Empresa</h3>
@@ -439,7 +440,7 @@ export default function HomePage() {
             </Card>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
