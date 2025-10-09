@@ -46,11 +46,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       logo: GalleryVerticalEnd,
       plan: "Professional",
     },
-    {
-      name: "Gestão Completa",
-      logo: AudioWaveform,
-      plan: "Premium",
-    },
   ],
   navMain: [
     {

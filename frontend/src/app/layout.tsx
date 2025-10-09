@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "App", //"Create Next App",  
-  description: "MicroSaas",
+  description: "Easy Budget",
 };
 
 export default function RootLayout({ children, }: Readonly<{children: React.ReactNode;}>) {

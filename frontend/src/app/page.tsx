@@ -121,7 +121,7 @@ export default function HomePage() {
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                 <Building2 className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">MicroSaaS</span>
+              <span className="text-xl font-bold text-gray-900">Easy Budget</span>
               <Badge variant="secondary" className="text-xs">v2.0</Badge>
             </div>
 
@@ -481,7 +481,7 @@ export default function HomePage() {
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Building2 className="h-5 w-5 text-white" />
                 </div>
-                <span className="text-xl font-bold">MicroSaaS</span>
+                <span className="text-xl font-bold">Easy Budget</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Transformando a forma como profissionais gerenciam seus orçamentos.
@@ -521,7 +521,7 @@ export default function HomePage() {
               <ul className="space-y-2 text-gray-400">
                 <li className="flex items-center">
                   <Mail className="w-4 h-4 mr-2" />
-                  contato@microsaas.com
+                  contato@s.com
                 </li>
                 <li className="flex items-center">
                   <Phone className="w-4 h-4 mr-2" />
@@ -536,7 +536,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 MicroSaaS Orçamentos. Todos os direitos reservados.</p>
+            <p>&copy; 2024 Easy Budget. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

@@ -258,7 +258,7 @@ export default function LoginPage() {
             <div className="mx-auto w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
               <Building2 className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">MicroSaaS Orçamentos</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Easy Budget</h1>
             <p className="text-gray-600">Gerencie seus orçamentos de forma profissional</p>
           </div>
 
